@@ -217,73 +217,241 @@
     // [PREFS.SHOW_TOOL_CALL]: false,
   };
 
-  // https://github.com/CosmoCreeper/Sine/blob/main/engine/injectAPI.js
-  // ===========================================================
-  // Module to read HTML content (and maybe modify if I implement it)
-  // ===========================================================
-
-  const getUrlAndTitle = () => {
-    return {
-      url: gBrowser.currentURI.spec,
-      title: gBrowser.selectedBrowser.contentTitle,
-    };
-  };
-
-  const _actors = new Set();
-  let _lazy = {};
-  ChromeUtils.defineESModuleGetters(_lazy, {
-    ActorManagerParent: "resource://gre/modules/ActorManagerParent.sys.mjs",
-  });
-
-  const windowManagerName = "FindbarAIWindowManager";
-
-  const windowManager = () => {
-    if (_actors.has(windowManagerName)) {
-      return;
-    }
-
-    const decl = {};
-    decl[windowManagerName] = {
-      parent: {
-        esModuleURI:
-          "chrome://userscripts/content/FindbarAIWindowManagerParent.sys.mjs",
-      },
-      child: {
-        esModuleURI:
-          "chrome://userscripts/content/FindbarAIWindowManagerChild.sys.mjs",
-        events: {
-          DOMContentLoaded: {},
-        },
-      },
-      matches: ["https://*", "http://*"],
+  function frameScript() {
+    const getUrlAndTitle = () => {
+      return {
+        url: content.location.href,
+        title: content.document.title,
+      };
     };
 
-    try {
-      _lazy.ActorManagerParent.addJSWindowActors(decl);
-      _actors.add(windowManagerName);
-      debugLog("FindbarAI WindowManager registered successfully");
-    } catch (e) {
-      debugError(`Failed to register JSWindowActor: ${e}`);
-    }
-  };
+    const extractRelevantContent = () => {
+      const clonedBody = content.document.body.cloneNode(true);
+      const elementsToRemove = clonedBody.querySelectorAll(
+        "script, style, meta, noscript, iframe, svg, canvas, img, video, audio, object, embed, applet, link, head"
+      );
+      elementsToRemove.forEach((el) => el.remove());
+      return clonedBody.innerHTML;
+    };
 
-  const windowManagerAPI = {
-    getWindowManager() {
-      try {
-        if (!gBrowser || !gBrowser.selectedBrowser) return undefined;
-        const context = gBrowser.selectedBrowser.browsingContext;
-        if (!context || !context.currentWindowContext) return undefined;
-        return context.currentWindowContext.getActor(windowManagerName);
-      } catch {
-        return undefined;
+    const extractTextContent = (trimWhiteSpace = true) => {
+      const clonedBody = content.document.body.cloneNode(true);
+      const elementsToRemove = clonedBody.querySelectorAll(
+        "script, style, meta, noscript, iframe, svg, canvas, input, textarea, select, img, video, audio, object, embed, applet, form, button, link, head"
+      );
+      elementsToRemove.forEach((el) => el.remove());
+
+      clonedBody.querySelectorAll("br").forEach((br) => {
+        br.replaceWith("\n");
+      });
+
+      const blockSelector =
+        "p, div, li, h1, h2, h3, h4, h5, h6, tr, article, section, header, footer, aside, main, blockquote, pre";
+      clonedBody.querySelectorAll(blockSelector).forEach((el) => {
+        el.append("\n");
+      });
+
+      const textContent = clonedBody.textContent;
+
+      if (trimWhiteSpace) {
+        return textContent.replace(/\s+/g, " ").trim();
       }
+
+      return textContent
+        .replace(/[ \t\r\f\v]+/g, " ")
+        .replace(/ ?\n ?/g, "\n")
+        .replace(/\n+/g, "\n")
+        .trim();
+    };
+
+    async function getYouTubeTranscript() {
+      const win = content;
+      const doc = content.document;
+
+      async function ensureBodyAvailable() {
+        if (doc.body) return;
+        await new Promise((resolve) => {
+          const check = () => {
+            if (doc.body) resolve();
+            else win.setTimeout(check, 50);
+          };
+          check();
+        });
+      }
+
+      function waitForSelectorWithObserver(selector, timeout = 5000) {
+        return new Promise(async (resolve, reject) => {
+          try {
+            await ensureBodyAvailable();
+            const el = doc.querySelector(selector);
+            if (el) return resolve(el);
+
+            const observer = new win.MutationObserver(() => {
+              const el = doc.querySelector(selector);
+              if (el) {
+                observer.disconnect();
+                resolve(el);
+              }
+            });
+
+            observer.observe(doc.body, {
+              childList: true,
+              subtree: true,
+            });
+
+            win.setTimeout(() => {
+              observer.disconnect();
+              reject(new Error(`Timeout waiting for ${selector}`));
+            }, timeout);
+          } catch (e) {
+            reject(new Error(`waitForSelectorWithObserver failed: ${e.message}`));
+          }
+        });
+      }
+
+      try {
+        if (!doc.querySelector("ytd-transcript-renderer")) {
+          const button = doc.querySelector('button[aria-label="Show transcript"]');
+          if (!button)
+            throw new Error('"Show transcript" button not found — transcript may not be available.');
+          button.click();
+          await waitForSelectorWithObserver("ytd-transcript-renderer", 5000);
+        }
+
+        await waitForSelectorWithObserver("ytd-transcript-segment-renderer .segment-text", 5000);
+
+        const segments = Array.from(
+          doc.querySelectorAll("ytd-transcript-segment-renderer .segment-text")
+        );
+        if (!segments.length) throw new Error("Transcript segments found, but all are empty.");
+
+        const transcript = segments
+          .map((el) => el.textContent.trim())
+          .filter(Boolean)
+          .join("\n");
+        return transcript;
+      } catch (err) {
+        throw err;
+      }
+    }
+
+    const handlers = {
+      GetPageHTMLContent: () => {
+        return {
+          content: extractRelevantContent(),
+          url: getUrlAndTitle().url,
+          title: getUrlAndTitle().title,
+        };
+      },
+
+      GetSelectedText: () => {
+        const selection = content.getSelection();
+        return {
+          selectedText: selection.toString(),
+          hasSelection: !selection.isCollapsed,
+          ...getUrlAndTitle(),
+        };
+      },
+
+      GetPageTextContent: ({ trimWhiteSpace }) => {
+        return {
+          textContent: extractTextContent(trimWhiteSpace),
+          ...getUrlAndTitle(),
+        };
+      },
+
+      ClickElement: ({ selector }) => {
+        const element = content.document.querySelector(selector);
+        if (!element) {
+          throw new Error(`Element with selector "${selector}" not found.`);
+        }
+        element.click();
+        return { result: `Clicked element with selector "${selector}".` };
+      },
+
+      FillForm: ({ selector, value }) => {
+        const element = content.document.querySelector(selector);
+        if (!element) {
+          throw new Error(`Element with selector "${selector}" not found.`);
+        }
+        element.value = value;
+        element.dispatchEvent(new Event("input", { bubbles: true }));
+        return {
+          result: `Filled element with selector "${selector}" with value "${value}".`,
+        };
+      },
+
+      GetYoutubeTranscript: async () => {
+        const transcript = await getYouTubeTranscript();
+        return { transcript };
+      },
+    };
+
+    addMessageListener("FindbarAI:Command", async function (msg) {
+      const cmd = msg.data.command;
+      const data = msg.data.data || {};
+      try {
+        const result = await handlers[cmd](data);
+        sendAsyncMessage("FindbarAI:Result", { command: cmd, result });
+      } catch (e) {
+        sendAsyncMessage("FindbarAI:Result", { command: cmd, result: { error: e.message } });
+      }
+    });
+  }
+
+  let currentMessageManager = null;
+
+  const updateMessageManager = () => {
+    if (gBrowser && gBrowser.selectedBrowser) {
+      const mm = gBrowser.selectedBrowser.messageManager;
+      if (mm !== currentMessageManager) {
+        currentMessageManager = mm;
+        if (!gBrowser.selectedBrowser._findbarAIInjected) {
+          const scriptText = `(${frameScript})();`;
+          mm.loadFrameScript(
+            "data:application/javascript;charset=utf-8," + encodeURIComponent(scriptText),
+            false
+          );
+          gBrowser.selectedBrowser._findbarAIInjected = true;
+        }
+      }
+    }
+  };
+
+  const messageManagerAPI = {
+    send(cmd, data = {}) {
+      updateMessageManager();
+      if (!currentMessageManager) {
+        debugError("No message manager available.");
+        return Promise.reject(new Error("No message manager available."));
+      }
+
+      return new Promise((resolve, reject) => {
+        const listener = (msg) => {
+          if (msg.data.command === cmd) {
+            currentMessageManager.removeMessageListener("FindbarAI:Result", listener);
+            if (msg.data.result && msg.data.result.error) {
+              reject(new Error(msg.data.result.error));
+            } else {
+              resolve(msg.data.result);
+            }
+          }
+        };
+        currentMessageManager.addMessageListener("FindbarAI:Result", listener);
+        currentMessageManager.sendAsyncMessage("FindbarAI:Command", { command: cmd, data });
+      });
+    },
+
+    getUrlAndTitle() {
+      return {
+        url: gBrowser.currentURI.spec,
+        title: gBrowser.selectedBrowser.contentTitle,
+      };
     },
 
     async getHTMLContent() {
-      const wm = this.getWindowManager();
-      if (!wm) return {};
       try {
-        return await wm.getPageHTMLContent();
+        return await this.send("GetPageHTMLContent");
       } catch (error) {
         debugError("Failed to get page HTML content:", error);
         return {};
@@ -291,32 +459,30 @@
     },
 
     async getSelectedText() {
-      const wm = this.getWindowManager();
-      if (!wm) return getUrlAndTitle();
       try {
-        return await wm.getSelectedText();
+        const result = await this.send("GetSelectedText");
+        if (!result || !result.hasSelection) {
+          return this.getUrlAndTitle();
+        }
+        return result;
       } catch (error) {
         debugError("Failed to get selected text:", error);
-        return getUrlAndTitle();
+        return this.getUrlAndTitle();
       }
     },
 
-    async getPageTextContent(trimWhiteSpace) {
-      const wm = this.getWindowManager();
-      if (!wm) return getUrlAndTitle();
+    async getPageTextContent(trimWhiteSpace = true) {
       try {
-        return await wm.getPageTextContent(trimWhiteSpace);
+        return await this.send("GetPageTextContent", { trimWhiteSpace });
       } catch (error) {
         debugError("Failed to get page text content:", error);
-        return getUrlAndTitle();
+        return this.getUrlAndTitle();
       }
     },
 
     async clickElement(selector) {
-      const wm = this.getWindowManager();
-      if (!wm) return { error: "No window manager found." };
       try {
-        return await wm.clickElement(selector);
+        return await this.send("ClickElement", { selector });
       } catch (error) {
         debugError(`Failed to click element with selector "${selector}":`, error);
         return { error: `Failed to click element with selector "${selector}".` };
@@ -324,10 +490,8 @@
     },
 
     async fillForm(selector, value) {
-      const wm = this.getWindowManager();
-      if (!wm) return { error: "No window manager found." };
       try {
-        return await wm.fillForm(selector, value);
+        return await this.send("FillForm", { selector, value });
       } catch (error) {
         debugError(`Failed to fill form with selector "${selector}":`, error);
         return { error: `Failed to fill form with selector "${selector}".` };
@@ -335,13 +499,11 @@
     },
 
     async getYoutubeTranscript() {
-      const wm = this.getWindowManager();
-      if (!wm) return { error: "No window manager found." };
       try {
-        return await wm.getYoutubeTranscript();
+        return await this.send("GetYoutubeTranscript");
       } catch (error) {
         debugError("Failed to get youtube transcript:", error);
-        return { error: "Failed to get youtube transcript." };
+        return { error: `Failed to get youtube transcript: ${error.message}` };
       }
     },
   };
@@ -958,7 +1120,7 @@
   async function clickElement(args) {
     const { selector } = args;
     if (!selector) return { error: "clickElement requires a selector." };
-    return windowManagerAPI.clickElement(selector);
+    return messageManagerAPI.clickElement(selector);
   }
 
   /**
@@ -972,16 +1134,16 @@
     const { selector, value } = args;
     if (!selector) return { error: "fillForm requires a selector." };
     if (!value) return { error: "fillForm requires a value." };
-    return windowManagerAPI.fillForm(selector, value);
+    return messageManagerAPI.fillForm(selector, value);
   }
 
   const availableTools = {
     search,
     newSplit,
     openLink,
-    getPageTextContent: windowManagerAPI.getPageTextContent.bind(windowManagerAPI),
-    getHTMLContent: windowManagerAPI.getHTMLContent.bind(windowManagerAPI),
-    getYoutubeTranscript: windowManagerAPI.getYoutubeTranscript.bind(windowManagerAPI),
+    getPageTextContent: messageManagerAPI.getPageTextContent.bind(messageManagerAPI),
+    getHTMLContent: messageManagerAPI.getHTMLContent.bind(messageManagerAPI),
+    getYoutubeTranscript: messageManagerAPI.getYoutubeTranscript.bind(messageManagerAPI),
     searchBookmarks,
     getAllBookmarks,
     createBookmark,
@@ -1557,7 +1719,7 @@ This example is correct, note that it contain unique \`id\`, and each in text ci
 
 Here is the initial info about the current page:
 `;
-        const pageContext = await windowManagerAPI.getPageTextContent(!PREFS.citationsEnabled);
+        const pageContext = await messageManagerAPI.getPageTextContent(!PREFS.citationsEnabled);
         systemPrompt += JSON.stringify(pageContext);
       }
 
@@ -2127,8 +2289,6 @@ Here is the initial info about the current page:
     `;
     },
   };
-
-  windowManager();
 
   var markdownStylesInjected = false;
   const injectMarkdownStyles = async () => {
@@ -2726,7 +2886,7 @@ Here is the initial info about the current page:
     },
     async setPromptTextFromSelection() {
       let text = "";
-      const selection = await windowManagerAPI.getSelectedText();
+      const selection = await messageManagerAPI.getSelectedText();
       if (!selection || !selection.hasSelection) text = this?.findbar?._findField?.value;
       else text = selection.selectedText;
       this.setPromptText(text);
@@ -2879,7 +3039,7 @@ Here is the initial info about the current page:
         ?.removeEventListener("popupshowing", this._updateContextMenuText);
     },
     handleContextMenuClick: async function () {
-      const selection = await windowManagerAPI.getSelectedText();
+      const selection = await messageManagerAPI.getSelectedText();
       let finalMessage = "";
       if (!selection.hasSelection) {
         finalMessage = "Summarize current page";
