@@ -7,7 +7,7 @@ https://github.com/user-attachments/assets/40dae6f6-065c-4852-be07-f29d00ec99ae
 ## Features
 
 - **Modern, Floating UI**: Replaces the default findbar with a sleek, draggable, resizable, and collapsible interface.
-- **Multi-Provider AI Chat**: Integrates with Google's Gemini and Mistral models for a conversational experience.
+- **Multi-Provider AI Chat**: Supports Mistral, Gemini, ChatGPT, Claude, Grok, Perplexity and Ollama.
 - **Page Content Awareness**: The AI can read the text content, HTML, and even YouTube transcripts of the current webpage to answer your questions accurately.
 - **Built-in Keyboard Shortcuts**: Use `Ctrl+Shift+F` and `Alt+Enter` for quick AI access.
 - **Highly Customizable**: Fine-tune your experience through an extensive in-app settings or `about:config`.
@@ -23,6 +23,7 @@ https://github.com/user-attachments/assets/40dae6f6-065c-4852-be07-f29d00ec99ae
 ## 🚨 Caution 🚨
 
 - **Privacy**: To answer questions about a webpage, this script sends the text content of the page to your selected provider. Please be aware of the privacy implications before using this feature on pages with sensitive information.
+- **Beta Version**: This is an beta version and is under active development. Expect breaking changes, bugs, and frequent updates.
 
 ## Installation
 
@@ -34,7 +35,7 @@ https://github.com/user-attachments/assets/40dae6f6-065c-4852-be07-f29d00ec99ae
 
 2. Open settings and go to `Sine Mods`.
 
-3. Search for BrowseBot and install.
+3. Go to input saying `or, add your own locally from a GitHub repo` and paste `https://github.com/BibekBhusal0/zen-custom-js/tree/sine-test/findbar-ai` and click install.
 
 ### Method 2: Using `fx-autoconfig`
 
