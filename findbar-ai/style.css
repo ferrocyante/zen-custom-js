@@ -98,6 +98,72 @@ browser {
     }
   }
 
+  @media -moz-pref("extension.pseudo-bg.enabled") {
+    :has(.browserSidebarContainer.deck-selected > .browserContainer > findbar:not([hidden="true"])) {
+      .browserSidebarContainer.deck-selected > .browserContainer::before{
+    position: absolute !important;
+    align-self: center !important;
+    z-index: 1 !important;
+    content: "" !important;
+    background-color: var(--acrylic-bg) !important;
+    top: calc(var(--findbar-y) - 10px) !important;
+    left: calc(var(--findbar-x) - 10px) !important;
+    width: var(--findbar-width)!important;
+    height: var(--findbar-height)!important;
+    opacity: 1 !important;
+
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+
+    border-radius: 12px;
+    visibility: visible;
+
+    transition: none  !important;
+  }
+
+    }
+
+    #ai-settings-modal-overlay,
+    .tool-confirmation-dialog {
+      &:before{
+        position: absolute !important;
+        align-self: center !important;
+        content: "" !important;
+        background-color: var(--acrylic-bg) !important;
+        visibility: visible;
+        transition: none  !important;
+        opacity: 1 !important;
+        border-radius: var(--acrylic-radius) !important;
+      }
+
+    }
+
+    .tool-confirmation-dialog::before{
+      width: 300px;
+      padding: 20px;
+      height: 100px;
+    }
+
+    #ai-settings-modal-overlay::before{
+      width: 500px;
+      min-width: 500px;
+      max-width: 90vw;
+      height: 80vh;
+      padding: 20px 0px 0px 20px;
+    }
+
+
+    .tool-confirmation-content ,
+    .browse-bot-settings-modal ,
+    findbar{
+      background: transparent !important;
+      background-color: transparent !important;
+      backdrop-filter:  none !important;
+    }
+
+  }
+
+
   findbar,
   .browse-bot-settings-modal {
     input[type="text"],
@@ -688,12 +754,12 @@ browser {
           /* } */
         }
 
-        .send-btn,
-        .stop-btn {
+        .send-btn {
           margin-left: auto !important;
           border: none !important;
           background-color: var(--browse-bot-primary-bg) !important;
           padding: 3px !important;
+          display: inline-flex !important;
           color: var(--browse-bot-primary) !important;
           align-self: end !important;
           min-width: 30px !important;
@@ -931,8 +997,7 @@ browser {
             position: relative !important;
           }
 
-          .send-btn,
-          .stop-btn {
+          .send-btn {
             padding: 1px !important;
             min-width: 24px !important;
             min-height: 24px !important;
@@ -1097,22 +1162,10 @@ browser {
       margin-bottom: 10px;
     }
 
-    &:has(#pref-extension\.browse-bot\.citations-enabled:checked) {
-      .setting-item:has(#pref-extension\.browse-bot\.stream-enabled) {
-        display: none !important;
-      }
-    }
-
     &:has(#pref-extension\.browse-bot\.citations-enabled:checked)
       :has(#pref-extension\.browse-bot\.god-mode:checked) {
       #citations-god-mode-warning {
         display: block !important;
-      }
-    }
-
-    label[for="pref-ollama-api-key"] {
-      &::after {
-        content: " (Set any value)";
       }
     }
 
@@ -1134,6 +1187,7 @@ browser {
     text-align: center;
     position: relative;
     width: 300px;
+     height: 100px;
     min-width: 200px;
     max-width: 90vw;
     border-radius: var(--acrylic-radius) !important;
