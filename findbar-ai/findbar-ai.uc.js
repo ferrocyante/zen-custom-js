@@ -35955,9 +35955,7 @@ Note that first and second tool clls can be made in parallel, but the third tool
     }
     setProvider(providerName) {
       if (this.AVAILABLE_PROVIDERS[providerName]) {
-        this.llmProvider = providerName;
         PREFS.llmProvider = providerName;
-        this.clearData();
         debugLog(`Switched LLM provider to: ${providerName}`);
       } else {
         debugError$1(`Provider "${providerName}" not found.`);
