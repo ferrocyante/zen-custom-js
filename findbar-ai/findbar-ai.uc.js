@@ -199,7 +199,7 @@
     }
   };
 
-  const debugError$1 = (...args) => {
+  const debugError = (...args) => {
     if (PREFS.getPref(PREFS.DEBUG_MODE, false)) {
       console.error("BrowseBot :", ...args);
     }
@@ -445,7 +445,7 @@
     send(cmd, data = {}) {
       updateMessageManager();
       if (!currentMessageManager) {
-        debugError$1("No message manager available.");
+        debugError("No message manager available.");
         return Promise.reject(new Error("No message manager available."));
       }
 
@@ -476,7 +476,7 @@
       try {
         return await this.send("GetPageHTMLContent");
       } catch (error) {
-        debugError$1("Failed to get page HTML content:", error);
+        debugError("Failed to get page HTML content:", error);
         return {};
       }
     },
@@ -489,7 +489,7 @@
         }
         return result;
       } catch (error) {
-        debugError$1("Failed to get selected text:", error);
+        debugError("Failed to get selected text:", error);
         return this.getUrlAndTitle();
       }
     },
@@ -498,7 +498,7 @@
       try {
         return await this.send("GetPageTextContent", { trimWhiteSpace });
       } catch (error) {
-        debugError$1("Failed to get page text content:", error);
+        debugError("Failed to get page text content:", error);
         return this.getUrlAndTitle();
       }
     },
@@ -507,7 +507,7 @@
       try {
         return await this.send("ClickElement", { selector });
       } catch (error) {
-        debugError$1(`Failed to click element with selector "${selector}":`, error);
+        debugError(`Failed to click element with selector "${selector}":`, error);
         return { error: `Failed to click element with selector "${selector}".` };
       }
     },
@@ -516,7 +516,7 @@
       try {
         return await this.send("FillForm", { selector, value });
       } catch (error) {
-        debugError$1(`Failed to fill form with selector "${selector}":`, error);
+        debugError(`Failed to fill form with selector "${selector}":`, error);
         return { error: `Failed to fill form with selector "${selector}".` };
       }
     },
@@ -525,7 +525,7 @@
       try {
         return await this.send("GetYoutubeTranscript");
       } catch (error) {
-        debugError$1("Failed to get youtube transcript:", error);
+        debugError("Failed to get youtube transcript:", error);
         return { error: `Failed to get youtube transcript: ${error.message}` };
       }
     },
@@ -35375,17 +35375,17 @@ Error message: ${getErrorMessage(cause)}`,
     try {
       const engine = await Services.search.getEngineByName(engineName);
       if (!engine) {
-        debugError$1(`No search engine found with name: ${engineName}`);
+        debugError(`No search engine found with name: ${engineName}`);
         return null;
       }
       const submission = engine.getSubmission(searchTerm.trim());
       if (!submission) {
-        debugError$1(`No submission found for term: ${searchTerm} and engine: ${engineName}`);
+        debugError(`No submission found for term: ${searchTerm} and engine: ${engineName}`);
         return null;
       }
       return submission.uri.spec;
     } catch (e) {
-      debugError$1(`Error getting search URL for engine "${engineName}".`, e);
+      debugError(`Error getting search URL for engine "${engineName}".`, e);
       return null;
     }
   }
@@ -35461,7 +35461,7 @@ Error message: ${getErrorMessage(cause)}`,
       }
       return { result: `Successfully opened ${link} in ${where}.` };
     } catch (e) {
-      debugError$1(`Failed to open link "${link}" in "${where}".`, e);
+      debugError(`Failed to open link "${link}" in "${where}".`, e);
       return { error: `Failed to open link.` };
     }
   }
@@ -35481,7 +35481,7 @@ Error message: ${getErrorMessage(cause)}`,
         result: `Successfully created ${type} split view with the provided links.`,
       };
     } catch (e) {
-      debugError$1("Failed to create split view.", e);
+      debugError("Failed to create split view.", e);
       return { error: "Failed to create split view." };
     }
   }
@@ -35515,7 +35515,7 @@ Error message: ${getErrorMessage(cause)}`,
       debugLog(`Found ${results.length} bookmarks for query "${query}":`, results);
       return { bookmarks: results };
     } catch (e) {
-      debugError$1(`Error searching bookmarks for query "${query}":`, e);
+      debugError(`Error searching bookmarks for query "${query}":`, e);
       return { error: `Failed to search bookmarks.` };
     }
   }
@@ -35539,7 +35539,7 @@ Error message: ${getErrorMessage(cause)}`,
       debugLog(`Read ${results.length} total bookmarks.`);
       return { bookmarks: results };
     } catch (e) {
-      debugError$1(`Error reading all bookmarks:`, e);
+      debugError(`Error reading all bookmarks:`, e);
       return { error: `Failed to read all bookmarks.` };
     }
   }
@@ -35568,7 +35568,7 @@ Error message: ${getErrorMessage(cause)}`,
       debugLog(`Bookmark created successfully:`, JSON.stringify(bm));
       return { result: `Successfully bookmarked "${bm.title}".` };
     } catch (e) {
-      debugError$1(`Error creating bookmark for URL "${url}":`, e);
+      debugError(`Error creating bookmark for URL "${url}":`, e);
       return { error: `Failed to create bookmark.` };
     }
   }
@@ -35596,7 +35596,7 @@ Error message: ${getErrorMessage(cause)}`,
       debugLog(`Bookmark folder created successfully:`, JSON.stringify(folderInfo));
       return { result: `Successfully created folder "${folder.title}".` };
     } catch (e) {
-      debugError$1(`Error creating bookmark folder "${title}":`, e);
+      debugError(`Error creating bookmark folder "${title}":`, e);
       return { error: `Failed to create folder.` };
     }
   }
@@ -35635,7 +35635,7 @@ Error message: ${getErrorMessage(cause)}`,
       debugLog(`Bookmark updated successfully:`, JSON.stringify(bm));
       return { result: `Successfully updated bookmark to "${bm.title}".` };
     } catch (e) {
-      debugError$1(`Error updating bookmark with id "${id}":`, e);
+      debugError(`Error updating bookmark with id "${id}":`, e);
       return { error: `Failed to update bookmark.` };
     }
   }
@@ -35655,7 +35655,7 @@ Error message: ${getErrorMessage(cause)}`,
       debugLog(`Bookmark with id "${id}" deleted successfully.`);
       return { result: `Successfully deleted bookmark.` };
     } catch (e) {
-      debugError$1(`Error deleting bookmark with id "${id}":`, e);
+      debugError(`Error deleting bookmark with id "${id}":`, e);
       return { error: `Failed to delete bookmark.` };
     }
   }
@@ -35896,7 +35896,7 @@ Note that first and second tool clls can be made in parallel, but the third tool
 *(Available search engines: ${engineNames}. Default is '${defaultEngineName}'.)*
 `;
     } catch (error) {
-      debugError$1("Error in getToolSystemPrompt:", error);
+      debugError("Error in getToolSystemPrompt:", error);
       return "";
     }
   };
@@ -35958,7 +35958,7 @@ Note that first and second tool clls can be made in parallel, but the third tool
         PREFS.llmProvider = providerName;
         debugLog(`Switched LLM provider to: ${providerName}`);
       } else {
-        debugError$1(`Provider "${providerName}" not found.`);
+        debugError(`Provider "${providerName}" not found.`);
       }
     }
     async updateSystemPrompt() {
@@ -36147,7 +36147,7 @@ Here is the initial info about the current page:
           }
         } catch (e) {
           // JSON parsing failed, keep rawText as answer.
-          debugError$1("Failed to parse AI message content as JSON:", e, "Raw Text:", responseText);
+          debugError("Failed to parse AI message content as JSON:", e, "Raw Text:", responseText);
         }
       }
       return { answer, citations };
@@ -36782,7 +36782,7 @@ Your goal is to ensure a seamless and user-friendly browsing experience.`;
           gURLBar.view.close();
         }
       } catch (e) {
-        debugError$1("urlbarAI: Error in _closeUrlBar", e);
+        debugError("urlbarAI: Error in _closeUrlBar", e);
       }
     },
 
@@ -36883,14 +36883,14 @@ Your goal is to ensure a seamless and user-friendly browsing experience.`;
           inputContainer.appendChild(button);
           debugLog("urlbarAI: 'Ask' button added successfully to .urlbar-input-container");
         } else if (retryCount < 10) {
-          debugError$1(
+          debugError(
             `Could not find #urlbar .urlbar-input-container to add the 'Ask' button. Retrying in 500ms... (attempt ${
             retryCount + 1
           })`
           );
           setTimeout(() => insertButton(retryCount + 1), 500);
         } else {
-          debugError$1(
+          debugError(
             "Could not find #urlbar .urlbar-input-container after multiple attempts. Giving up."
           );
         }
@@ -36925,7 +36925,7 @@ Your goal is to ensure a seamless and user-friendly browsing experience.`;
       markdownStylesInjected = true;
       return true;
     } catch (e) {
-      debugError$1(e);
+      debugError(e);
       return false;
     }
   };
@@ -37424,7 +37424,7 @@ Your goal is to ensure a seamless and user-friendly browsing experience.`;
         }
       } catch (e) {
         if (e.name !== "AbortError") {
-          debugError$1("Error sending message:", e);
+          debugError("Error sending message:", e);
           if (aiMessageDiv) aiMessageDiv.remove();
           this.addChatMessage({ role: "error", content: `Error: ${e.message}` });
         } else {
@@ -37797,7 +37797,7 @@ Your goal is to ensure a seamless and user-friendly browsing experience.`;
           debugLog(`Context menu not found, retrying... (attempt ${retryCount + 1}/5)`);
           setTimeout(() => this.addContextMenuItem(retryCount + 1), 200);
         } else {
-          debugError$1("Failed to add context menu item after 5 attempts: Context menu not found.");
+          debugError("Failed to add context menu item after 5 attempts: Context menu not found.");
         }
         return;
       }
