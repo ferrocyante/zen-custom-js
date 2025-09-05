@@ -532,10 +532,10 @@
   };
 
   // src/errors/ai-sdk-error.ts
-  var marker$b = "vercel.ai.error";
-  var symbol$c = Symbol.for(marker$b);
-  var _a$b;
-  var _AISDKError$9 = class _AISDKError extends Error {
+  var marker$3 = "vercel.ai.error";
+  var symbol$4 = Symbol.for(marker$3);
+  var _a$3;
+  var _AISDKError$1 = class _AISDKError extends Error {
     /**
      * Creates an AI SDK Error.
      *
@@ -550,7 +550,7 @@
       cause
     }) {
       super(message);
-      this[_a$b] = true;
+      this[_a$3] = true;
       this.name = name14;
       this.cause = cause;
     }
@@ -560,22 +560,22 @@
      * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
      */
     static isInstance(error) {
-      return _AISDKError.hasMarker(error, marker$b);
+      return _AISDKError.hasMarker(error, marker$3);
     }
     static hasMarker(error, marker15) {
       const markerSymbol = Symbol.for(marker15);
       return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
     }
   };
-  _a$b = symbol$c;
-  var AISDKError$9 = _AISDKError$9;
+  _a$3 = symbol$4;
+  var AISDKError$1 = _AISDKError$1;
 
   // src/errors/api-call-error.ts
-  var name$6 = "AI_APICallError";
-  var marker2$6 = `vercel.ai.error.${name$6}`;
-  var symbol2$6 = Symbol.for(marker2$6);
-  var _a2$6;
-  var APICallError$4 = class APICallError extends AISDKError$9 {
+  var name$3 = "AI_APICallError";
+  var marker2$3 = `vercel.ai.error.${name$3}`;
+  var symbol2$3 = Symbol.for(marker2$3);
+  var _a2$3;
+  var APICallError$1 = class APICallError extends AISDKError$1 {
     constructor({
       message,
       url,
@@ -591,8 +591,8 @@
       // server error
       data
     }) {
-      super({ name: name$6, message, cause });
-      this[_a2$6] = true;
+      super({ name: name$3, message, cause });
+      this[_a2$3] = true;
       this.url = url;
       this.requestBodyValues = requestBodyValues;
       this.statusCode = statusCode;
@@ -602,30 +602,30 @@
       this.data = data;
     }
     static isInstance(error) {
-      return AISDKError$9.hasMarker(error, marker2$6);
+      return AISDKError$1.hasMarker(error, marker2$3);
     }
   };
-  _a2$6 = symbol2$6;
+  _a2$3 = symbol2$3;
 
   // src/errors/empty-response-body-error.ts
   var name2$3 = "AI_EmptyResponseBodyError";
   var marker3$2 = `vercel.ai.error.${name2$3}`;
   var symbol3$2 = Symbol.for(marker3$2);
   var _a3$2;
-  var EmptyResponseBodyError$1 = class EmptyResponseBodyError extends AISDKError$9 {
+  var EmptyResponseBodyError$1 = class EmptyResponseBodyError extends AISDKError$1 {
     // used in isInstance
     constructor({ message = "Empty response body" } = {}) {
       super({ name: name2$3, message });
       this[_a3$2] = true;
     }
     static isInstance(error) {
-      return AISDKError$9.hasMarker(error, marker3$2);
+      return AISDKError$1.hasMarker(error, marker3$2);
     }
   };
   _a3$2 = symbol3$2;
 
   // src/errors/get-error-message.ts
-  function getErrorMessage$3(error) {
+  function getErrorMessage$2(error) {
     if (error == null) {
       return "unknown error";
     }
@@ -643,7 +643,7 @@
   var marker4$3 = `vercel.ai.error.${name3$2}`;
   var symbol4$3 = Symbol.for(marker4$3);
   var _a4$3;
-  var InvalidArgumentError$2 = class InvalidArgumentError extends AISDKError$9 {
+  var InvalidArgumentError$2 = class InvalidArgumentError extends AISDKError$1 {
     constructor({
       message,
       cause,
@@ -654,68 +654,155 @@
       this.argument = argument;
     }
     static isInstance(error) {
-      return AISDKError$9.hasMarker(error, marker4$3);
+      return AISDKError$1.hasMarker(error, marker4$3);
     }
   };
   _a4$3 = symbol4$3;
 
+  // src/errors/invalid-prompt-error.ts
+  var name4$2 = "AI_InvalidPromptError";
+  var marker5$1 = `vercel.ai.error.${name4$2}`;
+  var symbol5$1 = Symbol.for(marker5$1);
+  var _a5$1;
+  var InvalidPromptError = class extends AISDKError$1 {
+    constructor({
+      prompt,
+      message,
+      cause
+    }) {
+      super({ name: name4$2, message: `Invalid prompt: ${message}`, cause });
+      this[_a5$1] = true;
+      this.prompt = prompt;
+    }
+    static isInstance(error) {
+      return AISDKError$1.hasMarker(error, marker5$1);
+    }
+  };
+  _a5$1 = symbol5$1;
+
+  // src/errors/invalid-response-data-error.ts
+  var name5$1 = "AI_InvalidResponseDataError";
+  var marker6$1 = `vercel.ai.error.${name5$1}`;
+  var symbol6$1 = Symbol.for(marker6$1);
+  var _a6$1;
+  var InvalidResponseDataError = class extends AISDKError$1 {
+    constructor({
+      data,
+      message = `Invalid response data: ${JSON.stringify(data)}.`
+    }) {
+      super({ name: name5$1, message });
+      this[_a6$1] = true;
+      this.data = data;
+    }
+    static isInstance(error) {
+      return AISDKError$1.hasMarker(error, marker6$1);
+    }
+  };
+  _a6$1 = symbol6$1;
+
   // src/errors/json-parse-error.ts
-  var name6$3 = "AI_JSONParseError";
-  var marker7$4 = `vercel.ai.error.${name6$3}`;
-  var symbol7$4 = Symbol.for(marker7$4);
-  var _a7$4;
-  var JSONParseError$2 = class JSONParseError extends AISDKError$9 {
+  var name6$2 = "AI_JSONParseError";
+  var marker7$3 = `vercel.ai.error.${name6$2}`;
+  var symbol7$3 = Symbol.for(marker7$3);
+  var _a7$3;
+  var JSONParseError$1 = class JSONParseError extends AISDKError$1 {
     constructor({ text, cause }) {
       super({
-        name: name6$3,
+        name: name6$2,
         message: `JSON parsing failed: Text: ${text}.
-Error message: ${getErrorMessage$3(cause)}`,
+Error message: ${getErrorMessage$2(cause)}`,
         cause
       });
-      this[_a7$4] = true;
+      this[_a7$3] = true;
       this.text = text;
     }
     static isInstance(error) {
-      return AISDKError$9.hasMarker(error, marker7$4);
+      return AISDKError$1.hasMarker(error, marker7$3);
     }
   };
-  _a7$4 = symbol7$4;
+  _a7$3 = symbol7$3;
 
   // src/errors/load-api-key-error.ts
   var name7$1 = "AI_LoadAPIKeyError";
   var marker8$1 = `vercel.ai.error.${name7$1}`;
   var symbol8$1 = Symbol.for(marker8$1);
   var _a8$1;
-  var LoadAPIKeyError = class extends AISDKError$9 {
+  var LoadAPIKeyError = class extends AISDKError$1 {
     // used in isInstance
     constructor({ message }) {
       super({ name: name7$1, message });
       this[_a8$1] = true;
     }
     static isInstance(error) {
-      return AISDKError$9.hasMarker(error, marker8$1);
+      return AISDKError$1.hasMarker(error, marker8$1);
     }
   };
   _a8$1 = symbol8$1;
 
+  // src/errors/no-such-model-error.ts
+  var name10$1 = "AI_NoSuchModelError";
+  var marker11 = `vercel.ai.error.${name10$1}`;
+  var symbol11 = Symbol.for(marker11);
+  var _a11;
+  var NoSuchModelError = class extends AISDKError$1 {
+    constructor({
+      errorName = name10$1,
+      modelId,
+      modelType,
+      message = `No such ${modelType}: ${modelId}`
+    }) {
+      super({ name: errorName, message });
+      this[_a11] = true;
+      this.modelId = modelId;
+      this.modelType = modelType;
+    }
+    static isInstance(error) {
+      return AISDKError$1.hasMarker(error, marker11);
+    }
+  };
+  _a11 = symbol11;
+
+  // src/errors/too-many-embedding-values-for-call-error.ts
+  var name11$1 = "AI_TooManyEmbeddingValuesForCallError";
+  var marker12$2 = `vercel.ai.error.${name11$1}`;
+  var symbol12$2 = Symbol.for(marker12$2);
+  var _a12$2;
+  var TooManyEmbeddingValuesForCallError$1 = class TooManyEmbeddingValuesForCallError extends AISDKError$1 {
+    constructor(options) {
+      super({
+        name: name11$1,
+        message: `Too many values for a single embedding call. The ${options.provider} model "${options.modelId}" can only embed up to ${options.maxEmbeddingsPerCall} values per call, but ${options.values.length} values were provided.`
+      });
+      this[_a12$2] = true;
+      this.provider = options.provider;
+      this.modelId = options.modelId;
+      this.maxEmbeddingsPerCall = options.maxEmbeddingsPerCall;
+      this.values = options.values;
+    }
+    static isInstance(error) {
+      return AISDKError$1.hasMarker(error, marker12$2);
+    }
+  };
+  _a12$2 = symbol12$2;
+
   // src/errors/type-validation-error.ts
-  var name12$3 = "AI_TypeValidationError";
-  var marker13$2 = `vercel.ai.error.${name12$3}`;
-  var symbol13$2 = Symbol.for(marker13$2);
-  var _a13$2;
-  var _TypeValidationError$2 = class _TypeValidationError extends AISDKError$9 {
+  var name12$2 = "AI_TypeValidationError";
+  var marker13$1 = `vercel.ai.error.${name12$2}`;
+  var symbol13$1 = Symbol.for(marker13$1);
+  var _a13$1;
+  var _TypeValidationError$1 = class _TypeValidationError extends AISDKError$1 {
     constructor({ value, cause }) {
       super({
-        name: name12$3,
+        name: name12$2,
         message: `Type validation failed: Value: ${JSON.stringify(value)}.
-Error message: ${getErrorMessage$3(cause)}`,
+Error message: ${getErrorMessage$2(cause)}`,
         cause
       });
-      this[_a13$2] = true;
+      this[_a13$1] = true;
       this.value = value;
     }
     static isInstance(error) {
-      return AISDKError$9.hasMarker(error, marker13$2);
+      return AISDKError$1.hasMarker(error, marker13$1);
     }
     /**
      * Wraps an error into a TypeValidationError.
@@ -734,8 +821,52 @@ Error message: ${getErrorMessage$3(cause)}`,
       return _TypeValidationError.isInstance(cause) && cause.value === value ? cause : new _TypeValidationError({ value, cause });
     }
   };
-  _a13$2 = symbol13$2;
-  var TypeValidationError$2 = _TypeValidationError$2;
+  _a13$1 = symbol13$1;
+  var TypeValidationError$1 = _TypeValidationError$1;
+
+  // src/errors/unsupported-functionality-error.ts
+  var name13$1 = "AI_UnsupportedFunctionalityError";
+  var marker14$2 = `vercel.ai.error.${name13$1}`;
+  var symbol14$2 = Symbol.for(marker14$2);
+  var _a14$2;
+  var UnsupportedFunctionalityError$1 = class UnsupportedFunctionalityError extends AISDKError$1 {
+    constructor({
+      functionality,
+      message = `'${functionality}' functionality not supported.`
+    }) {
+      super({ name: name13$1, message });
+      this[_a14$2] = true;
+      this.functionality = functionality;
+    }
+    static isInstance(error) {
+      return AISDKError$1.hasMarker(error, marker14$2);
+    }
+  };
+  _a14$2 = symbol14$2;
+
+  // src/json-value/is-json.ts
+  function isJSONValue(value) {
+    if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+      return true;
+    }
+    if (Array.isArray(value)) {
+      return value.every(isJSONValue);
+    }
+    if (typeof value === "object") {
+      return Object.entries(value).every(
+        ([key, val]) => typeof key === "string" && isJSONValue(val)
+      );
+    }
+    return false;
+  }
+  function isJSONArray(value) {
+    return Array.isArray(value) && value.every(isJSONValue);
+  }
+  function isJSONObject(value) {
+    return value != null && typeof value === "object" && Object.entries(value).every(
+      ([key, val]) => typeof key === "string" && isJSONValue(val)
+    );
+  }
 
   class ParseError extends Error {
     constructor(message, options) {
@@ -2665,7 +2796,7 @@ Error message: ${getErrorMessage$3(cause)}`,
   const version = {
       major: 4,
       minor: 1,
-      patch: 3,
+      patch: 5,
   };
 
   const $ZodType = /*@__PURE__*/ $constructor("$ZodType", (inst, def) => {
@@ -10811,7 +10942,13 @@ Error message: ${getErrorMessage$3(cause)}`,
                           break;
                       }
                       case "null": {
-                          _json.type = "null";
+                          if (this.target === "openapi-3.0") {
+                              _json.type = "string";
+                              _json.nullable = true;
+                              _json.enum = [null];
+                          }
+                          else
+                              _json.type = "null";
                           break;
                       }
                       case "any": {
@@ -10903,21 +11040,7 @@ Error message: ${getErrorMessage$3(cause)}`,
                               ...params,
                               path: [...params.path, "anyOf", i],
                           }));
-                          if (this.target === "openapi-3.0") {
-                              const nonNull = options.filter((x) => x.type !== "null");
-                              const hasNull = nonNull.length !== options.length;
-                              if (nonNull.length === 1) {
-                                  Object.assign(json, nonNull[0]);
-                              }
-                              else {
-                                  json.anyOf = nonNull;
-                              }
-                              if (hasNull)
-                                  json.nullable = true;
-                          }
-                          else {
-                              json.anyOf = options;
-                          }
+                          json.anyOf = options;
                           break;
                       }
                       case "intersection": {
@@ -10961,7 +11084,7 @@ Error message: ${getErrorMessage$3(cause)}`,
                           }
                           else if (this.target === "openapi-3.0") {
                               json.items = {
-                                  anyOf: [...prefixItems],
+                                  anyOf: prefixItems,
                               };
                               if (rest) {
                                   json.items.anyOf.push(rest);
@@ -11109,9 +11232,8 @@ Error message: ${getErrorMessage$3(cause)}`,
                       case "nullable": {
                           const inner = this.process(def.innerType, params);
                           if (this.target === "openapi-3.0") {
-                              Object.assign(_json, inner);
-                              _json.nullable = true;
                               result.ref = def.innerType;
+                              _json.nullable = true;
                           }
                           else {
                               _json.anyOf = [inner, { type: "null" }];
@@ -12368,7 +12490,7 @@ Error message: ${getErrorMessage$3(cause)}`,
       $ZodSymbol.init(inst, def);
       ZodType.init(inst, def);
   });
-  function symbol$b(params) {
+  function symbol$3(params) {
       return _symbol(ZodSymbol, params);
   }
   const ZodUndefined = /*@__PURE__*/ $constructor("ZodUndefined", (inst, def) => {
@@ -13234,7 +13356,7 @@ Error message: ${getErrorMessage$3(cause)}`,
     stringbool: stringbool,
     success: success,
     superRefine: superRefine,
-    symbol: symbol$b,
+    symbol: symbol$3,
     templateLiteral: templateLiteral,
     toJSONSchema: toJSONSchema,
     toLowerCase: _toLowerCase,
@@ -13373,7 +13495,7 @@ Error message: ${getErrorMessage$3(cause)}`,
   var generateId$1 = createIdGenerator$1();
 
   // src/get-error-message.ts
-  function getErrorMessage$2(error) {
+  function getErrorMessage$1(error) {
     if (error == null) {
       return "unknown error";
     }
@@ -13405,7 +13527,7 @@ Error message: ${getErrorMessage$3(cause)}`,
     if (error instanceof TypeError && FETCH_FAILED_ERROR_MESSAGES.includes(error.message.toLowerCase())) {
       const cause = error.cause;
       if (cause != null) {
-        return new APICallError$4({
+        return new APICallError$1({
           message: `Cannot connect to API: ${cause.message}`,
           cause,
           url,
@@ -13451,10 +13573,10 @@ Error message: ${getErrorMessage$3(cause)}`,
             requestBodyValues: {}
           });
         } catch (error) {
-          if (isAbortError$1(error) || APICallError$4.isInstance(error)) {
+          if (isAbortError$1(error) || APICallError$1.isInstance(error)) {
             throw error;
           }
-          throw new APICallError$4({
+          throw new APICallError$1({
             message: "Failed to process error response",
             cause: error,
             statusCode: response.status,
@@ -13473,11 +13595,11 @@ Error message: ${getErrorMessage$3(cause)}`,
         });
       } catch (error) {
         if (error instanceof Error) {
-          if (isAbortError$1(error) || APICallError$4.isInstance(error)) {
+          if (isAbortError$1(error) || APICallError$1.isInstance(error)) {
             throw error;
           }
         }
-        throw new APICallError$4({
+        throw new APICallError$1({
           message: "Failed to process successful response",
           cause: error,
           statusCode: response.status,
@@ -13594,6 +13716,19 @@ Error message: ${getErrorMessage$3(cause)}`,
     return settingValue;
   }
 
+  // src/media-type-to-extension.ts
+  function mediaTypeToExtension(mediaType) {
+    var _a;
+    const [_type, subtype = ""] = mediaType.toLowerCase().split("/");
+    return (_a = {
+      mpeg: "mp3",
+      "x-wav": "wav",
+      opus: "ogg",
+      mp4: "m4a",
+      "x-m4a": "m4a"
+    }[subtype]) != null ? _a : subtype;
+  }
+
   // src/secure-json-parse.ts
   var suspectProtoRx = /"__proto__"\s*:/;
   var suspectConstructorRx = /"constructor"\s*:/;
@@ -13653,7 +13788,7 @@ Error message: ${getErrorMessage$3(cause)}`,
       const result = await standardSchema["~standard"].validate(value);
       return result.issues == null ? { success: true, value: result.value } : {
         success: false,
-        error: new TypeValidationError$2({
+        error: new TypeValidationError$1({
           value,
           cause: result.issues
         })
@@ -13668,7 +13803,7 @@ Error message: ${getErrorMessage$3(cause)}`,
   }) {
     const result = await safeValidateTypes$1({ value, schema });
     if (!result.success) {
-      throw TypeValidationError$2.wrap({ value, cause: result.error });
+      throw TypeValidationError$1.wrap({ value, cause: result.error });
     }
     return result.value;
   }
@@ -13687,13 +13822,13 @@ Error message: ${getErrorMessage$3(cause)}`,
       }
       return {
         success: false,
-        error: TypeValidationError$2.wrap({ value, cause: result.error }),
+        error: TypeValidationError$1.wrap({ value, cause: result.error }),
         rawValue: value
       };
     } catch (error) {
       return {
         success: false,
-        error: TypeValidationError$2.wrap({ value, cause: error }),
+        error: TypeValidationError$1.wrap({ value, cause: error }),
         rawValue: value
       };
     }
@@ -13711,10 +13846,10 @@ Error message: ${getErrorMessage$3(cause)}`,
       }
       return validateTypes$1({ value, schema });
     } catch (error) {
-      if (JSONParseError$2.isInstance(error) || TypeValidationError$2.isInstance(error)) {
+      if (JSONParseError$1.isInstance(error) || TypeValidationError$1.isInstance(error)) {
         throw error;
       }
-      throw new JSONParseError$2({ text, cause: error });
+      throw new JSONParseError$1({ text, cause: error });
     }
   }
   async function safeParseJSON$1({
@@ -13730,7 +13865,7 @@ Error message: ${getErrorMessage$3(cause)}`,
     } catch (error) {
       return {
         success: false,
-        error: JSONParseError$2.isInstance(error) ? error : new JSONParseError$2({ text, cause: error }),
+        error: JSONParseError$1.isInstance(error) ? error : new JSONParseError$1({ text, cause: error }),
         rawValue: void 0
       };
     }
@@ -13849,10 +13984,10 @@ Error message: ${getErrorMessage$3(cause)}`,
             requestBodyValues: body.values
           });
         } catch (error) {
-          if (isAbortError$1(error) || APICallError$4.isInstance(error)) {
+          if (isAbortError$1(error) || APICallError$1.isInstance(error)) {
             throw error;
           }
-          throw new APICallError$4({
+          throw new APICallError$1({
             message: "Failed to process error response",
             cause: error,
             statusCode: response.status,
@@ -13871,11 +14006,11 @@ Error message: ${getErrorMessage$3(cause)}`,
         });
       } catch (error) {
         if (error instanceof Error) {
-          if (isAbortError$1(error) || APICallError$4.isInstance(error)) {
+          if (isAbortError$1(error) || APICallError$1.isInstance(error)) {
             throw error;
           }
         }
-        throw new APICallError$4({
+        throw new APICallError$1({
           message: "Failed to process successful response",
           cause: error,
           statusCode: response.status,
@@ -13967,7 +14102,7 @@ Error message: ${getErrorMessage$3(cause)}`,
     if (responseBody.trim() === "") {
       return {
         responseHeaders,
-        value: new APICallError$4({
+        value: new APICallError$1({
           message: response.statusText,
           url,
           requestBodyValues,
@@ -13985,7 +14120,7 @@ Error message: ${getErrorMessage$3(cause)}`,
       });
       return {
         responseHeaders,
-        value: new APICallError$4({
+        value: new APICallError$1({
           message: errorToMessage(parsedError),
           url,
           requestBodyValues,
@@ -13999,7 +14134,7 @@ Error message: ${getErrorMessage$3(cause)}`,
     } catch (parseError) {
       return {
         responseHeaders,
-        value: new APICallError$4({
+        value: new APICallError$1({
           message: response.statusText,
           url,
           requestBodyValues,
@@ -14032,7 +14167,7 @@ Error message: ${getErrorMessage$3(cause)}`,
     });
     const responseHeaders = extractResponseHeaders$1(response);
     if (!parsedResult.success) {
-      throw new APICallError$4({
+      throw new APICallError$1({
         message: "Invalid JSON response",
         cause: parsedResult.error,
         statusCode: response.status,
@@ -14051,7 +14186,7 @@ Error message: ${getErrorMessage$3(cause)}`,
   var createBinaryResponseHandler = () => async ({ response, url, requestBodyValues }) => {
     const responseHeaders = extractResponseHeaders$1(response);
     if (!response.body) {
-      throw new APICallError$4({
+      throw new APICallError$1({
         message: "Response body is empty",
         url,
         requestBodyValues,
@@ -14067,7 +14202,7 @@ Error message: ${getErrorMessage$3(cause)}`,
         value: new Uint8Array(buffer)
       };
     } catch (error) {
-      throw new APICallError$4({
+      throw new APICallError$1({
         message: "Failed to read response as array buffer",
         url,
         requestBodyValues,
@@ -15362,335 +15497,20 @@ Error message: ${getErrorMessage$3(cause)}`,
     }
   }
 
-  // src/errors/ai-sdk-error.ts
-  var marker$a = "vercel.ai.error";
-  var symbol$a = Symbol.for(marker$a);
-  var _a$a;
-  var _AISDKError$8 = class _AISDKError extends Error {
-    /**
-     * Creates an AI SDK Error.
-     *
-     * @param {Object} params - The parameters for creating the error.
-     * @param {string} params.name - The name of the error.
-     * @param {string} params.message - The error message.
-     * @param {unknown} [params.cause] - The underlying cause of the error.
-     */
-    constructor({
-      name: name14,
-      message,
-      cause
-    }) {
-      super(message);
-      this[_a$a] = true;
-      this.name = name14;
-      this.cause = cause;
-    }
-    /**
-     * Checks if the given error is an AI SDK Error.
-     * @param {unknown} error - The error to check.
-     * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
-     */
-    static isInstance(error) {
-      return _AISDKError.hasMarker(error, marker$a);
-    }
-    static hasMarker(error, marker15) {
-      const markerSymbol = Symbol.for(marker15);
-      return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
-    }
-  };
-  _a$a = symbol$a;
-  var AISDKError$8 = _AISDKError$8;
-
-  // src/errors/api-call-error.ts
-  var name$5 = "AI_APICallError";
-  var marker2$5 = `vercel.ai.error.${name$5}`;
-  var symbol2$5 = Symbol.for(marker2$5);
-  var _a2$5;
-  var APICallError$3 = class APICallError extends AISDKError$8 {
-    constructor({
-      message,
-      url,
-      requestBodyValues,
-      statusCode,
-      responseHeaders,
-      responseBody,
-      cause,
-      isRetryable = statusCode != null && (statusCode === 408 || // request timeout
-      statusCode === 409 || // conflict
-      statusCode === 429 || // too many requests
-      statusCode >= 500),
-      // server error
-      data
-    }) {
-      super({ name: name$5, message, cause });
-      this[_a2$5] = true;
-      this.url = url;
-      this.requestBodyValues = requestBodyValues;
-      this.statusCode = statusCode;
-      this.responseHeaders = responseHeaders;
-      this.responseBody = responseBody;
-      this.isRetryable = isRetryable;
-      this.data = data;
-    }
-    static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker2$5);
-    }
-  };
-  _a2$5 = symbol2$5;
-
-  // src/errors/get-error-message.ts
-  function getErrorMessage$1(error) {
-    if (error == null) {
-      return "unknown error";
-    }
-    if (typeof error === "string") {
-      return error;
-    }
-    if (error instanceof Error) {
-      return error.message;
-    }
-    return JSON.stringify(error);
-  }
-
-  // src/errors/invalid-prompt-error.ts
-  var name4$3 = "AI_InvalidPromptError";
-  var marker5$2 = `vercel.ai.error.${name4$3}`;
-  var symbol5$2 = Symbol.for(marker5$2);
-  var _a5$2;
-  var InvalidPromptError$1 = class InvalidPromptError extends AISDKError$8 {
-    constructor({
-      prompt,
-      message,
-      cause
-    }) {
-      super({ name: name4$3, message: `Invalid prompt: ${message}`, cause });
-      this[_a5$2] = true;
-      this.prompt = prompt;
-    }
-    static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker5$2);
-    }
-  };
-  _a5$2 = symbol5$2;
-
-  // src/errors/json-parse-error.ts
-  var name6$2 = "AI_JSONParseError";
-  var marker7$3 = `vercel.ai.error.${name6$2}`;
-  var symbol7$3 = Symbol.for(marker7$3);
-  var _a7$3;
-  var JSONParseError$1 = class JSONParseError extends AISDKError$8 {
-    constructor({ text, cause }) {
-      super({
-        name: name6$2,
-        message: `JSON parsing failed: Text: ${text}.
-Error message: ${getErrorMessage$1(cause)}`,
-        cause
-      });
-      this[_a7$3] = true;
-      this.text = text;
-    }
-    static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker7$3);
-    }
-  };
-  _a7$3 = symbol7$3;
-
-  // src/errors/type-validation-error.ts
-  var name12$2 = "AI_TypeValidationError";
-  var marker13$1 = `vercel.ai.error.${name12$2}`;
-  var symbol13$1 = Symbol.for(marker13$1);
-  var _a13$1;
-  var _TypeValidationError$1 = class _TypeValidationError extends AISDKError$8 {
-    constructor({ value, cause }) {
-      super({
-        name: name12$2,
-        message: `Type validation failed: Value: ${JSON.stringify(value)}.
-Error message: ${getErrorMessage$1(cause)}`,
-        cause
-      });
-      this[_a13$1] = true;
-      this.value = value;
-    }
-    static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker13$1);
-    }
-    /**
-     * Wraps an error into a TypeValidationError.
-     * If the cause is already a TypeValidationError with the same value, it returns the cause.
-     * Otherwise, it creates a new TypeValidationError.
-     *
-     * @param {Object} params - The parameters for wrapping the error.
-     * @param {unknown} params.value - The value that failed validation.
-     * @param {unknown} params.cause - The original error or cause of the validation failure.
-     * @returns {TypeValidationError} A TypeValidationError instance.
-     */
-    static wrap({
-      value,
-      cause
-    }) {
-      return _TypeValidationError.isInstance(cause) && cause.value === value ? cause : new _TypeValidationError({ value, cause });
-    }
-  };
-  _a13$1 = symbol13$1;
-  var TypeValidationError$1 = _TypeValidationError$1;
-
-  // src/errors/unsupported-functionality-error.ts
-  var name13$7 = "AI_UnsupportedFunctionalityError";
-  var marker14$8 = `vercel.ai.error.${name13$7}`;
-  var symbol14$8 = Symbol.for(marker14$8);
-  var _a14$8;
-  var UnsupportedFunctionalityError$7 = class UnsupportedFunctionalityError extends AISDKError$8 {
-    constructor({
-      functionality,
-      message = `'${functionality}' functionality not supported.`
-    }) {
-      super({ name: name13$7, message });
-      this[_a14$8] = true;
-      this.functionality = functionality;
-    }
-    static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker14$8);
-    }
-  };
-  _a14$8 = symbol14$8;
-
-  // src/json-value/is-json.ts
-  function isJSONValue(value) {
-    if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-      return true;
-    }
-    if (Array.isArray(value)) {
-      return value.every(isJSONValue);
-    }
-    if (typeof value === "object") {
-      return Object.entries(value).every(
-        ([key, val]) => typeof key === "string" && isJSONValue(val)
-      );
-    }
-    return false;
-  }
-  function isJSONArray(value) {
-    return Array.isArray(value) && value.every(isJSONValue);
-  }
-  function isJSONObject(value) {
-    return value != null && typeof value === "object" && Object.entries(value).every(
-      ([key, val]) => typeof key === "string" && isJSONValue(val)
-    );
-  }
-
-  // src/errors/ai-sdk-error.ts
-  var marker$9 = "vercel.ai.error";
-  var symbol$9 = Symbol.for(marker$9);
-  var _a$9;
-  var _AISDKError$7 = class _AISDKError extends Error {
-    /**
-     * Creates an AI SDK Error.
-     *
-     * @param {Object} params - The parameters for creating the error.
-     * @param {string} params.name - The name of the error.
-     * @param {string} params.message - The error message.
-     * @param {unknown} [params.cause] - The underlying cause of the error.
-     */
-    constructor({
-      name: name14,
-      message,
-      cause
-    }) {
-      super(message);
-      this[_a$9] = true;
-      this.name = name14;
-      this.cause = cause;
-    }
-    /**
-     * Checks if the given error is an AI SDK Error.
-     * @param {unknown} error - The error to check.
-     * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
-     */
-    static isInstance(error) {
-      return _AISDKError.hasMarker(error, marker$9);
-    }
-    static hasMarker(error, marker15) {
-      const markerSymbol = Symbol.for(marker15);
-      return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
-    }
-  };
-  _a$9 = symbol$9;
-  var AISDKError$7 = _AISDKError$7;
-
-  // src/errors/api-call-error.ts
-  var name$4 = "AI_APICallError";
-  var marker2$4 = `vercel.ai.error.${name$4}`;
-  var symbol2$4 = Symbol.for(marker2$4);
-  var _a2$4;
-  var APICallError$2 = class APICallError extends AISDKError$7 {
-    constructor({
-      message,
-      url,
-      requestBodyValues,
-      statusCode,
-      responseHeaders,
-      responseBody,
-      cause,
-      isRetryable = statusCode != null && (statusCode === 408 || // request timeout
-      statusCode === 409 || // conflict
-      statusCode === 429 || // too many requests
-      statusCode >= 500),
-      // server error
-      data
-    }) {
-      super({ name: name$4, message, cause });
-      this[_a2$4] = true;
-      this.url = url;
-      this.requestBodyValues = requestBodyValues;
-      this.statusCode = statusCode;
-      this.responseHeaders = responseHeaders;
-      this.responseBody = responseBody;
-      this.isRetryable = isRetryable;
-      this.data = data;
-    }
-    static isInstance(error) {
-      return AISDKError$7.hasMarker(error, marker2$4);
-    }
-  };
-  _a2$4 = symbol2$4;
-
-  // src/errors/no-such-model-error.ts
-  var name10$5 = "AI_NoSuchModelError";
-  var marker11$4 = `vercel.ai.error.${name10$5}`;
-  var symbol11$4 = Symbol.for(marker11$4);
-  var _a11$4;
-  var NoSuchModelError$4 = class NoSuchModelError extends AISDKError$7 {
-    constructor({
-      errorName = name10$5,
-      modelId,
-      modelType,
-      message = `No such ${modelType}: ${modelId}`
-    }) {
-      super({ name: errorName, message });
-      this[_a11$4] = true;
-      this.modelId = modelId;
-      this.modelType = modelType;
-    }
-    static isInstance(error) {
-      return AISDKError$7.hasMarker(error, marker11$4);
-    }
-  };
-  _a11$4 = symbol11$4;
-
   // src/gateway-provider.ts
 
   // src/errors/gateway-error.ts
-  var marker$8 = "vercel.ai.gateway.error";
-  var symbol$8 = Symbol.for(marker$8);
-  var _a$8, _b;
-  var GatewayError = class _GatewayError extends (_b = Error, _a$8 = symbol$8, _b) {
+  var marker$2 = "vercel.ai.gateway.error";
+  var symbol$2 = Symbol.for(marker$2);
+  var _a$2, _b;
+  var GatewayError = class _GatewayError extends (_b = Error, _a$2 = symbol$2, _b) {
     constructor({
       message,
       statusCode = 500,
       cause
     }) {
       super(message);
-      this[_a$8] = true;
+      this[_a$2] = true;
       this.statusCode = statusCode;
       this.cause = cause;
     }
@@ -15703,29 +15523,29 @@ Error message: ${getErrorMessage$1(cause)}`,
       return _GatewayError.hasMarker(error);
     }
     static hasMarker(error) {
-      return typeof error === "object" && error !== null && symbol$8 in error && error[symbol$8] === true;
+      return typeof error === "object" && error !== null && symbol$2 in error && error[symbol$2] === true;
     }
   };
 
   // src/errors/gateway-authentication-error.ts
-  var name$3 = "GatewayAuthenticationError";
-  var marker2$3 = `vercel.ai.gateway.error.${name$3}`;
-  var symbol2$3 = Symbol.for(marker2$3);
-  var _a2$3, _b2;
-  var GatewayAuthenticationError = class _GatewayAuthenticationError extends (_b2 = GatewayError, _a2$3 = symbol2$3, _b2) {
+  var name$2 = "GatewayAuthenticationError";
+  var marker2$2 = `vercel.ai.gateway.error.${name$2}`;
+  var symbol2$2 = Symbol.for(marker2$2);
+  var _a2$2, _b2;
+  var GatewayAuthenticationError = class _GatewayAuthenticationError extends (_b2 = GatewayError, _a2$2 = symbol2$2, _b2) {
     constructor({
       message = "Authentication failed",
       statusCode = 401,
       cause
     } = {}) {
       super({ message, statusCode, cause });
-      this[_a2$3] = true;
+      this[_a2$2] = true;
       // used in isInstance
-      this.name = name$3;
+      this.name = name$2;
       this.type = "authentication_error";
     }
     static isInstance(error) {
-      return GatewayError.hasMarker(error) && symbol2$3 in error;
+      return GatewayError.hasMarker(error) && symbol2$2 in error;
     }
     /**
      * Creates a contextual error message when authentication fails
@@ -15820,14 +15640,14 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       return GatewayError.hasMarker(error) && symbol4$2 in error;
     }
   };
-  var name4$2 = "GatewayModelNotFoundError";
-  var marker5$1 = `vercel.ai.gateway.error.${name4$2}`;
-  var symbol5$1 = Symbol.for(marker5$1);
+  var name4$1 = "GatewayModelNotFoundError";
+  var marker5 = `vercel.ai.gateway.error.${name4$1}`;
+  var symbol5 = Symbol.for(marker5);
   var modelNotFoundParamSchema = object$1({
     modelId: string$1()
   });
-  var _a5$1, _b5;
-  var GatewayModelNotFoundError = class extends (_b5 = GatewayError, _a5$1 = symbol5$1, _b5) {
+  var _a5, _b5;
+  var GatewayModelNotFoundError = class extends (_b5 = GatewayError, _a5 = symbol5, _b5) {
     constructor({
       message = "Model not found",
       statusCode = 404,
@@ -15835,36 +15655,36 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       cause
     } = {}) {
       super({ message, statusCode, cause });
-      this[_a5$1] = true;
+      this[_a5] = true;
       // used in isInstance
-      this.name = name4$2;
+      this.name = name4$1;
       this.type = "model_not_found";
       this.modelId = modelId;
     }
     static isInstance(error) {
-      return GatewayError.hasMarker(error) && symbol5$1 in error;
+      return GatewayError.hasMarker(error) && symbol5 in error;
     }
   };
 
   // src/errors/gateway-internal-server-error.ts
-  var name5$1 = "GatewayInternalServerError";
-  var marker6$1 = `vercel.ai.gateway.error.${name5$1}`;
-  var symbol6$1 = Symbol.for(marker6$1);
-  var _a6$1, _b6;
-  var GatewayInternalServerError = class extends (_b6 = GatewayError, _a6$1 = symbol6$1, _b6) {
+  var name5 = "GatewayInternalServerError";
+  var marker6 = `vercel.ai.gateway.error.${name5}`;
+  var symbol6 = Symbol.for(marker6);
+  var _a6, _b6;
+  var GatewayInternalServerError = class extends (_b6 = GatewayError, _a6 = symbol6, _b6) {
     constructor({
       message = "Internal server error",
       statusCode = 500,
       cause
     } = {}) {
       super({ message, statusCode, cause });
-      this[_a6$1] = true;
+      this[_a6] = true;
       // used in isInstance
-      this.name = name5$1;
+      this.name = name5;
       this.type = "internal_server_error";
     }
     static isInstance(error) {
-      return GatewayError.hasMarker(error) && symbol6$1 in error;
+      return GatewayError.hasMarker(error) && symbol6 in error;
     }
   };
 
@@ -15959,7 +15779,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     if (GatewayError.isInstance(error)) {
       return error;
     }
-    if (APICallError$2.isInstance(error)) {
+    if (APICallError$1.isInstance(error)) {
       return createGatewayErrorFromResponse({
         response: extractApiCallResponse(error),
         statusCode: (_a8 = error.statusCode) != null ? _a8 : 500,
@@ -16378,7 +16198,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     };
     provider.getAvailableModels = getAvailableModels;
     provider.imageModel = (modelId) => {
-      throw new NoSuchModelError$4({ modelId, modelType: "imageModel" });
+      throw new NoSuchModelError({ modelId, modelType: "imageModel" });
     };
     provider.languageModel = createLanguageModel;
     provider.textEmbeddingModel = (modelId) => {
@@ -17702,26 +17522,76 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     for (var name17 in all)
       __defProp(target, name17, { get: all[name17], enumerable: true });
   };
-  var name$2 = "AI_NoOutputSpecifiedError";
-  var marker$7 = `vercel.ai.error.${name$2}`;
-  var symbol$7 = Symbol.for(marker$7);
-  var _a$7;
-  var NoOutputSpecifiedError = class extends AISDKError$8 {
+  var name$1 = "AI_NoOutputSpecifiedError";
+  var marker$1 = `vercel.ai.error.${name$1}`;
+  var symbol$1 = Symbol.for(marker$1);
+  var _a$1;
+  var NoOutputSpecifiedError = class extends AISDKError$1 {
     // used in isInstance
     constructor({ message = "No output specified." } = {}) {
-      super({ name: name$2, message });
-      this[_a$7] = true;
+      super({ name: name$1, message });
+      this[_a$1] = true;
     }
     static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker$7);
+      return AISDKError$1.hasMarker(error, marker$1);
     }
   };
-  _a$7 = symbol$7;
+  _a$1 = symbol$1;
+
+  // src/logger/log-warnings.ts
+  function formatWarning(warning) {
+    const prefix = "AI SDK Warning:";
+    switch (warning.type) {
+      case "unsupported-setting": {
+        let message = `${prefix} The "${warning.setting}" setting is not supported by this model`;
+        if (warning.details) {
+          message += ` - ${warning.details}`;
+        }
+        return message;
+      }
+      case "unsupported-tool": {
+        const toolName = "name" in warning.tool ? warning.tool.name : "unknown tool";
+        let message = `${prefix} The tool "${toolName}" is not supported by this model`;
+        if (warning.details) {
+          message += ` - ${warning.details}`;
+        }
+        return message;
+      }
+      case "other": {
+        return `${prefix} ${warning.message}`;
+      }
+      default: {
+        return `${prefix} ${JSON.stringify(warning, null, 2)}`;
+      }
+    }
+  }
+  var FIRST_WARNING_INFO_MESSAGE = "AI SDK Warning System: To turn off warning logging, set the AI_SDK_LOG_WARNINGS global to false.";
+  var hasLoggedBefore = false;
+  var logWarnings = (warnings) => {
+    if (warnings.length === 0) {
+      return;
+    }
+    const logger = globalThis.AI_SDK_LOG_WARNINGS;
+    if (logger === false) {
+      return;
+    }
+    if (typeof logger === "function") {
+      logger(warnings);
+      return;
+    }
+    if (!hasLoggedBefore) {
+      hasLoggedBefore = true;
+      console.info(FIRST_WARNING_INFO_MESSAGE);
+    }
+    for (const warning of warnings) {
+      console.warn(formatWarning(warning));
+    }
+  };
   var name2$1 = "AI_InvalidArgumentError";
-  var marker2$2 = `vercel.ai.error.${name2$1}`;
-  var symbol2$2 = Symbol.for(marker2$2);
-  var _a2$2;
-  var InvalidArgumentError$1 = class InvalidArgumentError extends AISDKError$8 {
+  var marker2$1 = `vercel.ai.error.${name2$1}`;
+  var symbol2$1 = Symbol.for(marker2$1);
+  var _a2$1;
+  var InvalidArgumentError$1 = class InvalidArgumentError extends AISDKError$1 {
     constructor({
       parameter,
       value,
@@ -17731,33 +17601,33 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
         name: name2$1,
         message: `Invalid argument for parameter ${parameter}: ${message}`
       });
-      this[_a2$2] = true;
+      this[_a2$1] = true;
       this.parameter = parameter;
       this.value = value;
     }
     static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker2$2);
+      return AISDKError$1.hasMarker(error, marker2$1);
     }
   };
-  _a2$2 = symbol2$2;
-  var name4$1 = "AI_InvalidToolInputError";
-  var marker4$1 = `vercel.ai.error.${name4$1}`;
+  _a2$1 = symbol2$1;
+  var name4 = "AI_InvalidToolInputError";
+  var marker4$1 = `vercel.ai.error.${name4}`;
   var symbol4$1 = Symbol.for(marker4$1);
   var _a4$1;
-  var InvalidToolInputError = class extends AISDKError$8 {
+  var InvalidToolInputError = class extends AISDKError$1 {
     constructor({
       toolInput,
       toolName,
       cause,
-      message = `Invalid input for tool ${toolName}: ${getErrorMessage$1(cause)}`
+      message = `Invalid input for tool ${toolName}: ${getErrorMessage$2(cause)}`
     }) {
-      super({ name: name4$1, message, cause });
+      super({ name: name4, message, cause });
       this[_a4$1] = true;
       this.toolInput = toolInput;
       this.toolName = toolName;
     }
     static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker4$1);
+      return AISDKError$1.hasMarker(error, marker4$1);
     }
   };
   _a4$1 = symbol4$1;
@@ -17765,7 +17635,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
   var marker7$1 = `vercel.ai.error.${name7}`;
   var symbol7$1 = Symbol.for(marker7$1);
   var _a7$1;
-  var NoObjectGeneratedError = class extends AISDKError$8 {
+  var NoObjectGeneratedError = class extends AISDKError$1 {
     constructor({
       message = "No object generated.",
       cause,
@@ -17782,7 +17652,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       this.finishReason = finishReason;
     }
     static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker7$1);
+      return AISDKError$1.hasMarker(error, marker7$1);
     }
   };
   _a7$1 = symbol7$1;
@@ -17790,7 +17660,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
   var marker8 = `vercel.ai.error.${name8}`;
   var symbol8 = Symbol.for(marker8);
   var _a8;
-  var NoOutputGeneratedError = class extends AISDKError$8 {
+  var NoOutputGeneratedError = class extends AISDKError$1 {
     // used in isInstance
     constructor({
       message = "No output generated.",
@@ -17800,7 +17670,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       this[_a8] = true;
     }
     static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker8);
+      return AISDKError$1.hasMarker(error, marker8);
     }
   };
   _a8 = symbol8;
@@ -17808,7 +17678,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
   var marker9 = `vercel.ai.error.${name9}`;
   var symbol9 = Symbol.for(marker9);
   var _a9;
-  var NoSuchToolError = class extends AISDKError$8 {
+  var NoSuchToolError = class extends AISDKError$1 {
     constructor({
       toolName,
       availableTools = void 0,
@@ -17820,30 +17690,30 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       this.availableTools = availableTools;
     }
     static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker9);
+      return AISDKError$1.hasMarker(error, marker9);
     }
   };
   _a9 = symbol9;
-  var name10$4 = "AI_ToolCallRepairError";
-  var marker10 = `vercel.ai.error.${name10$4}`;
+  var name10 = "AI_ToolCallRepairError";
+  var marker10 = `vercel.ai.error.${name10}`;
   var symbol10 = Symbol.for(marker10);
   var _a10;
-  var ToolCallRepairError = class extends AISDKError$8 {
+  var ToolCallRepairError = class extends AISDKError$1 {
     constructor({
       cause,
       originalError,
-      message = `Error repairing tool call: ${getErrorMessage$1(cause)}`
+      message = `Error repairing tool call: ${getErrorMessage$2(cause)}`
     }) {
-      super({ name: name10$4, message, cause });
+      super({ name: name10, message, cause });
       this[_a10] = true;
       this.originalError = originalError;
     }
     static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker10);
+      return AISDKError$1.hasMarker(error, marker10);
     }
   };
   _a10 = symbol10;
-  var UnsupportedModelVersionError = class extends AISDKError$8 {
+  var UnsupportedModelVersionError = class extends AISDKError$1 {
     constructor(options) {
       super({
         name: "AI_UnsupportedModelVersionError",
@@ -17855,28 +17725,28 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     }
   };
   var name12$1 = "AI_InvalidMessageRoleError";
-  var marker12$4 = `vercel.ai.error.${name12$1}`;
-  var symbol12$4 = Symbol.for(marker12$4);
-  var _a12$4;
-  var InvalidMessageRoleError = class extends AISDKError$8 {
+  var marker12$1 = `vercel.ai.error.${name12$1}`;
+  var symbol12$1 = Symbol.for(marker12$1);
+  var _a12$1;
+  var InvalidMessageRoleError = class extends AISDKError$1 {
     constructor({
       role,
       message = `Invalid message role: '${role}'. Must be one of: "system", "user", "assistant", "tool".`
     }) {
       super({ name: name12$1, message });
-      this[_a12$4] = true;
+      this[_a12$1] = true;
       this.role = role;
     }
     static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker12$4);
+      return AISDKError$1.hasMarker(error, marker12$1);
     }
   };
-  _a12$4 = symbol12$4;
+  _a12$1 = symbol12$1;
   var name14 = "AI_DownloadError";
-  var marker14$7 = `vercel.ai.error.${name14}`;
-  var symbol14$7 = Symbol.for(marker14$7);
-  var _a14$7;
-  var DownloadError = class extends AISDKError$8 {
+  var marker14$1 = `vercel.ai.error.${name14}`;
+  var symbol14$1 = Symbol.for(marker14$1);
+  var _a14$1;
+  var DownloadError = class extends AISDKError$1 {
     constructor({
       url,
       statusCode,
@@ -17885,21 +17755,21 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       message = cause == null ? `Failed to download ${url}: ${statusCode} ${statusText}` : `Failed to download ${url}: ${cause}`
     }) {
       super({ name: name14, message, cause });
-      this[_a14$7] = true;
+      this[_a14$1] = true;
       this.url = url;
       this.statusCode = statusCode;
       this.statusText = statusText;
     }
     static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker14$7);
+      return AISDKError$1.hasMarker(error, marker14$1);
     }
   };
-  _a14$7 = symbol14$7;
+  _a14$1 = symbol14$1;
   var name15 = "AI_RetryError";
   var marker15 = `vercel.ai.error.${name15}`;
   var symbol15 = Symbol.for(marker15);
   var _a15;
-  var RetryError = class extends AISDKError$8 {
+  var RetryError = class extends AISDKError$1 {
     constructor({
       message,
       reason,
@@ -17912,7 +17782,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       this.lastError = errors[errors.length - 1];
     }
     static isInstance(error) {
-      return AISDKError$8.hasMarker(error, marker15);
+      return AISDKError$1.hasMarker(error, marker15);
     }
   };
   _a15 = symbol15;
@@ -18034,8 +17904,8 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     return void 0;
   }
 
-  // src/util/download.ts
-  async function download({ url }) {
+  // src/util/download/download.ts
+  var download = async ({ url }) => {
     var _a17;
     const urlText = url.toString();
     try {
@@ -18057,7 +17927,14 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       }
       throw new DownloadError({ url: urlText, cause: error });
     }
-  }
+  };
+
+  // src/util/download/download-function.ts
+  var createDefaultDownloadFunction = (download2 = download) => (requestedDownloads) => Promise.all(
+    requestedDownloads.map(
+      async (requestedDownload) => requestedDownload.isUrlSupportedByModel ? null : download2(requestedDownload)
+    )
+  );
 
   // src/prompt/split-data-url.ts
   function splitDataUrl(dataUrl) {
@@ -18107,7 +17984,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
         content.toString()
       );
       if (dataUrlMediaType == null || base64Content == null) {
-        throw new AISDKError$8({
+        throw new AISDKError$1({
           name: "InvalidDataContentError",
           message: `Invalid data URL format in content ${content.toString()}`
         });
@@ -18130,11 +18007,11 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
   async function convertToLanguageModelPrompt({
     prompt,
     supportedUrls,
-    downloadImplementation = download
+    download: download2 = createDefaultDownloadFunction()
   }) {
     const downloadedAssets = await downloadAssets(
       prompt.messages,
-      downloadImplementation,
+      download2,
       supportedUrls
     );
     return [
@@ -18256,8 +18133,8 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       }
     }
   }
-  async function downloadAssets(messages, downloadImplementation, supportedUrls) {
-    const urls = messages.filter((message) => message.role === "user").map((message) => message.content).filter(
+  async function downloadAssets(messages, download2, supportedUrls) {
+    const plannedDownloads = messages.filter((message) => message.role === "user").map((message) => message.content).filter(
       (content) => Array.isArray(content)
     ).flat().filter(
       (part) => part.type === "image" || part.type === "file"
@@ -18273,20 +18150,23 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       }
       return { mediaType, data };
     }).filter(
-      (part) => part.data instanceof URL && part.mediaType != null && !isUrlSupported({
+      (part) => part.data instanceof URL
+    ).map((part) => ({
+      url: part.data,
+      isUrlSupportedByModel: part.mediaType != null && isUrlSupported({
         url: part.data.toString(),
         mediaType: part.mediaType,
         supportedUrls
       })
-    ).map((part) => part.data);
-    const downloadedImages = await Promise.all(
-      urls.map(async (url) => ({
-        url,
-        data: await downloadImplementation({ url })
-      }))
-    );
+    }));
+    const downloadedFiles = await download2(plannedDownloads);
     return Object.fromEntries(
-      downloadedImages.map(({ url, data }) => [url.toString(), data])
+      downloadedFiles.filter(
+        (downloadedFile) => (downloadedFile == null ? void 0 : downloadedFile.data) != null
+      ).map(({ data, mediaType }, index) => [
+        plannedDownloads[index].url.toString(),
+        { data, mediaType }
+      ])
     );
   }
   function convertPartToLanguageModelPart(part, downloadedAssets) {
@@ -18628,19 +18508,19 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
   // src/prompt/standardize-prompt.ts
   async function standardizePrompt(prompt) {
     if (prompt.prompt == null && prompt.messages == null) {
-      throw new InvalidPromptError$1({
+      throw new InvalidPromptError({
         prompt,
         message: "prompt or messages must be defined"
       });
     }
     if (prompt.prompt != null && prompt.messages != null) {
-      throw new InvalidPromptError$1({
+      throw new InvalidPromptError({
         prompt,
         message: "prompt and messages cannot be defined at the same time"
       });
     }
     if (prompt.system != null && typeof prompt.system !== "string") {
-      throw new InvalidPromptError$1({
+      throw new InvalidPromptError({
         prompt,
         message: "system must be a string"
       });
@@ -18653,13 +18533,13 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     } else if (prompt.messages != null) {
       messages = prompt.messages;
     } else {
-      throw new InvalidPromptError$1({
+      throw new InvalidPromptError({
         prompt,
         message: "prompt or messages must be defined"
       });
     }
     if (messages.length === 0) {
-      throw new InvalidPromptError$1({
+      throw new InvalidPromptError({
         prompt,
         message: "messages must not be empty"
       });
@@ -18669,7 +18549,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       schema: array(modelMessageSchema)
     });
     if (!validationResult.success) {
-      throw new InvalidPromptError$1({
+      throw new InvalidPromptError({
         prompt,
         message: "The messages must be a ModelMessage[]. If you have passed a UIMessage[], you can use convertToModelMessages to convert them.",
         cause: validationResult.error
@@ -18682,7 +18562,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
   }
   function wrapGatewayError(error) {
     if (GatewayAuthenticationError.isInstance(error) || GatewayModelNotFoundError.isInstance(error)) {
-      return new AISDKError$8({
+      return new AISDKError$1({
         name: "GatewayError",
         message: "Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.",
         cause: error
@@ -18975,7 +18855,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       if (maxRetries === 0) {
         throw error;
       }
-      const errorMessage = getErrorMessage$2(error);
+      const errorMessage = getErrorMessage$1(error);
       const newErrors = [...errors, error];
       const tryNumber = newErrors.length;
       if (tryNumber > maxRetries) {
@@ -18985,7 +18865,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
           errors: newErrors
         });
       }
-      if (error instanceof Error && APICallError$3.isInstance(error) && error.isRetryable === true && tryNumber <= maxRetries) {
+      if (error instanceof Error && APICallError$1.isInstance(error) && error.isRetryable === true && tryNumber <= maxRetries) {
         await delay(
           getRetryDelayInMs({
             error,
@@ -19259,7 +19139,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     errorMode
   }) {
     if (errorMode === "text") {
-      return { type: "error-text", value: getErrorMessage$1(output) };
+      return { type: "error-text", value: getErrorMessage$2(output) };
     } else if (errorMode === "json") {
       return { type: "error-json", value: toJSONValue(output) };
     }
@@ -19386,6 +19266,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     experimental_prepareStep,
     prepareStep = experimental_prepareStep,
     experimental_repairToolCall: repairToolCall,
+    experimental_download: download2,
     experimental_context,
     _internal: {
       generateId: generateId3 = originalGenerateId,
@@ -19435,7 +19316,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
         }),
         tracer,
         fn: async (span) => {
-          var _a17, _b, _c, _d, _e, _f;
+          var _a17, _b, _c, _d, _e, _f, _g;
           const callSettings2 = prepareCallSettings(settings);
           let currentModelResponse;
           let clientToolCalls = [];
@@ -19458,7 +19339,8 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                 system: (_a17 = prepareStepResult == null ? void 0 : prepareStepResult.system) != null ? _a17 : initialPrompt.system,
                 messages: (_b = prepareStepResult == null ? void 0 : prepareStepResult.messages) != null ? _b : stepInputMessages
               },
-              supportedUrls: await model.supportedUrls
+              supportedUrls: await model.supportedUrls,
+              download: download2
             });
             const stepModel = resolveLanguageModel(
               (_c = prepareStepResult == null ? void 0 : prepareStepResult.model) != null ? _c : model
@@ -19509,7 +19391,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                   }),
                   tracer,
                   fn: async (span2) => {
-                    var _a19, _b2, _c2, _d2, _e2, _f2, _g, _h;
+                    var _a19, _b2, _c2, _d2, _e2, _f2, _g2, _h;
                     const result = await stepModel.doGenerate({
                       ...callSettings2,
                       tools: stepTools,
@@ -19524,7 +19406,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                       id: (_b2 = (_a19 = result.response) == null ? void 0 : _a19.id) != null ? _b2 : generateId3(),
                       timestamp: (_d2 = (_c2 = result.response) == null ? void 0 : _c2.timestamp) != null ? _d2 : currentDate(),
                       modelId: (_f2 = (_e2 = result.response) == null ? void 0 : _e2.modelId) != null ? _f2 : stepModel.modelId,
-                      headers: (_g = result.response) == null ? void 0 : _g.headers,
+                      headers: (_g2 = result.response) == null ? void 0 : _g2.headers,
                       body: (_h = result.response) == null ? void 0 : _h.body
                     };
                     span2.setAttributes(
@@ -19602,7 +19484,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                 toolCallId: toolCall.toolCallId,
                 toolName: toolCall.toolName,
                 input: toolCall.input,
-                error: getErrorMessage$2(toolCall.error),
+                error: getErrorMessage$1(toolCall.error),
                 dynamic: true
               });
             }
@@ -19648,6 +19530,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                 messages: structuredClone(responseMessages)
               }
             });
+            logWarnings((_g = currentModelResponse.warnings) != null ? _g : []);
             steps.push(currentStepResult);
             await (onStepFinish == null ? void 0 : onStepFinish(currentStepResult));
           } while (
@@ -21450,7 +21333,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                   toolCallId: toolCall.toolCallId,
                   toolName: toolCall.toolName,
                   input: toolCall.input,
-                  error: getErrorMessage$2(toolCall.error),
+                  error: getErrorMessage$1(toolCall.error),
                   dynamic: true
                 });
                 break;
@@ -21631,6 +21514,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     activeTools = experimental_activeTools,
     experimental_repairToolCall: repairToolCall,
     experimental_transform: transform,
+    experimental_download: download2,
     includeRawChunks = false,
     onChunk,
     onError = ({ error }) => {
@@ -21675,7 +21559,8 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       now: now2,
       currentDate,
       generateId: generateId3,
-      experimental_context
+      experimental_context,
+      download: download2
     });
   }
   function createOutputTransformStream(output) {
@@ -21772,7 +21657,8 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       onFinish,
       onAbort,
       onStepFinish,
-      experimental_context
+      experimental_context,
+      download: download2
     }) {
       this._totalUsage = new DelayedPromise();
       this._finishReason = new DelayedPromise();
@@ -21903,6 +21789,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
               providerMetadata: part.providerMetadata
             });
             await (onStepFinish == null ? void 0 : onStepFinish(currentStepResult));
+            logWarnings(recordedWarnings);
             recordedSteps.push(currentStepResult);
             recordedContent = [];
             activeReasoningContent = {};
@@ -22094,7 +21981,8 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                 system: (_a17 = prepareStepResult == null ? void 0 : prepareStepResult.system) != null ? _a17 : initialPrompt.system,
                 messages: (_b = prepareStepResult == null ? void 0 : prepareStepResult.messages) != null ? _b : stepInputMessages
               },
-              supportedUrls: await model.supportedUrls
+              supportedUrls: await model.supportedUrls,
+              download: download2
             });
             const stepModel = resolveLanguageModel(
               (_c = prepareStepResult == null ? void 0 : prepareStepResult.model) != null ? _c : model
@@ -22610,7 +22498,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       sendSources = false,
       sendStart = true,
       sendFinish = true,
-      onError = getErrorMessage$1
+      onError = getErrorMessage$2
     } = {}) {
       const responseMessageId = generateMessageId != null ? getResponseUIMessageId({
         originalMessages,
@@ -22945,7 +22833,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       } : { success: true, value };
     },
     createElementStream() {
-      throw new UnsupportedFunctionalityError$7({
+      throw new UnsupportedFunctionalityError$1({
         functionality: "element streams in no-schema mode"
       });
     }
@@ -22967,7 +22855,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       return safeValidateTypes$1({ value, schema });
     },
     createElementStream() {
-      throw new UnsupportedFunctionalityError$7({
+      throw new UnsupportedFunctionalityError$1({
         functionality: "element streams in object mode"
       });
     }
@@ -23154,7 +23042,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
         };
       },
       createElementStream() {
-        throw new UnsupportedFunctionalityError$7({
+        throw new UnsupportedFunctionalityError$1({
           functionality: "element streams in enum mode"
         });
       }
@@ -23366,6 +23254,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       headers,
       experimental_repairText: repairText,
       experimental_telemetry: telemetry,
+      experimental_download: download2,
       providerOptions,
       _internal: {
         generateId: generateId3 = originalGenerateId3,
@@ -23443,7 +23332,8 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
           });
           const promptMessages = await convertToLanguageModelPrompt({
             prompt: standardizedPrompt,
-            supportedUrls: await model.supportedUrls
+            supportedUrls: await model.supportedUrls,
+            download: download2
           });
           const generateResult = await retry(
             () => recordSpan({
@@ -23544,6 +23434,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
           request = (_a17 = generateResult.request) != null ? _a17 : {};
           response = generateResult.responseData;
           reasoning = generateResult.reasoning;
+          logWarnings(warnings);
           const object2 = await parseAndValidateObjectResultWithRepair(
             result,
             outputStrategy,
@@ -23953,111 +23844,6 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     )
   });
 
-  // src/errors/ai-sdk-error.ts
-  var marker$6 = "vercel.ai.error";
-  var symbol$6 = Symbol.for(marker$6);
-  var _a$6;
-  var _AISDKError$6 = class _AISDKError extends Error {
-    /**
-     * Creates an AI SDK Error.
-     *
-     * @param {Object} params - The parameters for creating the error.
-     * @param {string} params.name - The name of the error.
-     * @param {string} params.message - The error message.
-     * @param {unknown} [params.cause] - The underlying cause of the error.
-     */
-    constructor({
-      name: name14,
-      message,
-      cause
-    }) {
-      super(message);
-      this[_a$6] = true;
-      this.name = name14;
-      this.cause = cause;
-    }
-    /**
-     * Checks if the given error is an AI SDK Error.
-     * @param {unknown} error - The error to check.
-     * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
-     */
-    static isInstance(error) {
-      return _AISDKError.hasMarker(error, marker$6);
-    }
-    static hasMarker(error, marker15) {
-      const markerSymbol = Symbol.for(marker15);
-      return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
-    }
-  };
-  _a$6 = symbol$6;
-  var AISDKError$6 = _AISDKError$6;
-
-  // src/errors/no-such-model-error.ts
-  var name10$3 = "AI_NoSuchModelError";
-  var marker11$3 = `vercel.ai.error.${name10$3}`;
-  var symbol11$3 = Symbol.for(marker11$3);
-  var _a11$3;
-  var NoSuchModelError$3 = class NoSuchModelError extends AISDKError$6 {
-    constructor({
-      errorName = name10$3,
-      modelId,
-      modelType,
-      message = `No such ${modelType}: ${modelId}`
-    }) {
-      super({ name: errorName, message });
-      this[_a11$3] = true;
-      this.modelId = modelId;
-      this.modelType = modelType;
-    }
-    static isInstance(error) {
-      return AISDKError$6.hasMarker(error, marker11$3);
-    }
-  };
-  _a11$3 = symbol11$3;
-
-  // src/errors/too-many-embedding-values-for-call-error.ts
-  var name11$3 = "AI_TooManyEmbeddingValuesForCallError";
-  var marker12$3 = `vercel.ai.error.${name11$3}`;
-  var symbol12$3 = Symbol.for(marker12$3);
-  var _a12$3;
-  var TooManyEmbeddingValuesForCallError$3 = class TooManyEmbeddingValuesForCallError extends AISDKError$6 {
-    constructor(options) {
-      super({
-        name: name11$3,
-        message: `Too many values for a single embedding call. The ${options.provider} model "${options.modelId}" can only embed up to ${options.maxEmbeddingsPerCall} values per call, but ${options.values.length} values were provided.`
-      });
-      this[_a12$3] = true;
-      this.provider = options.provider;
-      this.modelId = options.modelId;
-      this.maxEmbeddingsPerCall = options.maxEmbeddingsPerCall;
-      this.values = options.values;
-    }
-    static isInstance(error) {
-      return AISDKError$6.hasMarker(error, marker12$3);
-    }
-  };
-  _a12$3 = symbol12$3;
-
-  // src/errors/unsupported-functionality-error.ts
-  var name13$6 = "AI_UnsupportedFunctionalityError";
-  var marker14$6 = `vercel.ai.error.${name13$6}`;
-  var symbol14$6 = Symbol.for(marker14$6);
-  var _a14$6;
-  var UnsupportedFunctionalityError$6 = class UnsupportedFunctionalityError extends AISDKError$6 {
-    constructor({
-      functionality,
-      message = `'${functionality}' functionality not supported.`
-    }) {
-      super({ name: name13$6, message });
-      this[_a14$6] = true;
-      this.functionality = functionality;
-    }
-    static isInstance(error) {
-      return AISDKError$6.hasMarker(error, marker14$6);
-    }
-  };
-  _a14$6 = symbol14$6;
-
   // src/mistral-provider.ts
   function convertToMistralChatMessages(prompt) {
     const messages = [];
@@ -24090,7 +23876,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                       document_url: part.data.toString()
                     };
                   } else {
-                    throw new UnsupportedFunctionalityError$6({
+                    throw new UnsupportedFunctionalityError$1({
                       functionality: "Only images and PDF file parts are supported"
                     });
                   }
@@ -24276,7 +24062,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
         };
       default: {
         const _exhaustiveCheck = type;
-        throw new UnsupportedFunctionalityError$6({
+        throw new UnsupportedFunctionalityError$1({
           functionality: `tool choice type: ${_exhaustiveCheck}`
         });
       }
@@ -24741,7 +24527,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       headers
     }) {
       if (values.length > this.maxEmbeddingsPerCall) {
-        throw new TooManyEmbeddingValuesForCallError$3({
+        throw new TooManyEmbeddingValuesForCallError$1({
           provider: this.provider,
           modelId: this.modelId,
           maxEmbeddingsPerCall: this.maxEmbeddingsPerCall,
@@ -24818,93 +24604,11 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
     provider.textEmbedding = createEmbeddingModel;
     provider.textEmbeddingModel = createEmbeddingModel;
     provider.imageModel = (modelId) => {
-      throw new NoSuchModelError$3({ modelId, modelType: "imageModel" });
+      throw new NoSuchModelError({ modelId, modelType: "imageModel" });
     };
     return provider;
   }
   createMistral();
-
-  // src/errors/ai-sdk-error.ts
-  var marker$5 = "vercel.ai.error";
-  var symbol$5 = Symbol.for(marker$5);
-  var _a$5;
-  var _AISDKError$5 = class _AISDKError extends Error {
-    /**
-     * Creates an AI SDK Error.
-     *
-     * @param {Object} params - The parameters for creating the error.
-     * @param {string} params.name - The name of the error.
-     * @param {string} params.message - The error message.
-     * @param {unknown} [params.cause] - The underlying cause of the error.
-     */
-    constructor({
-      name: name14,
-      message,
-      cause
-    }) {
-      super(message);
-      this[_a$5] = true;
-      this.name = name14;
-      this.cause = cause;
-    }
-    /**
-     * Checks if the given error is an AI SDK Error.
-     * @param {unknown} error - The error to check.
-     * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
-     */
-    static isInstance(error) {
-      return _AISDKError.hasMarker(error, marker$5);
-    }
-    static hasMarker(error, marker15) {
-      const markerSymbol = Symbol.for(marker15);
-      return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
-    }
-  };
-  _a$5 = symbol$5;
-  var AISDKError$5 = _AISDKError$5;
-
-  // src/errors/too-many-embedding-values-for-call-error.ts
-  var name11$2 = "AI_TooManyEmbeddingValuesForCallError";
-  var marker12$2 = `vercel.ai.error.${name11$2}`;
-  var symbol12$2 = Symbol.for(marker12$2);
-  var _a12$2;
-  var TooManyEmbeddingValuesForCallError$2 = class TooManyEmbeddingValuesForCallError extends AISDKError$5 {
-    constructor(options) {
-      super({
-        name: name11$2,
-        message: `Too many values for a single embedding call. The ${options.provider} model "${options.modelId}" can only embed up to ${options.maxEmbeddingsPerCall} values per call, but ${options.values.length} values were provided.`
-      });
-      this[_a12$2] = true;
-      this.provider = options.provider;
-      this.modelId = options.modelId;
-      this.maxEmbeddingsPerCall = options.maxEmbeddingsPerCall;
-      this.values = options.values;
-    }
-    static isInstance(error) {
-      return AISDKError$5.hasMarker(error, marker12$2);
-    }
-  };
-  _a12$2 = symbol12$2;
-
-  // src/errors/unsupported-functionality-error.ts
-  var name13$5 = "AI_UnsupportedFunctionalityError";
-  var marker14$5 = `vercel.ai.error.${name13$5}`;
-  var symbol14$5 = Symbol.for(marker14$5);
-  var _a14$5;
-  var UnsupportedFunctionalityError$5 = class UnsupportedFunctionalityError extends AISDKError$5 {
-    constructor({
-      functionality,
-      message = `'${functionality}' functionality not supported.`
-    }) {
-      super({ name: name13$5, message });
-      this[_a14$5] = true;
-      this.functionality = functionality;
-    }
-    static isInstance(error) {
-      return AISDKError$5.hasMarker(error, marker14$5);
-    }
-  };
-  _a14$5 = symbol14$5;
 
   // src/google-provider.ts
   var googleErrorDataSchema = object$1({
@@ -24972,7 +24676,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
         schema: googleGenerativeAIEmbeddingProviderOptions
       });
       if (values.length > this.maxEmbeddingsPerCall) {
-        throw new TooManyEmbeddingValuesForCallError$2({
+        throw new TooManyEmbeddingValuesForCallError$1({
           provider: this.provider,
           modelId: this.modelId,
           maxEmbeddingsPerCall: this.maxEmbeddingsPerCall,
@@ -25154,7 +24858,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
       switch (role) {
         case "system": {
           if (!systemMessagesAllowed) {
-            throw new UnsupportedFunctionalityError$5({
+            throw new UnsupportedFunctionalityError$1({
               functionality: "system messages are only supported at the beginning of the conversation"
             });
           }
@@ -25214,12 +24918,12 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                 }
                 case "file": {
                   if (part.mediaType !== "image/png") {
-                    throw new UnsupportedFunctionalityError$5({
+                    throw new UnsupportedFunctionalityError$1({
                       functionality: "Only PNG images are supported in assistant messages"
                     });
                   }
                   if (part.data instanceof URL) {
-                    throw new UnsupportedFunctionalityError$5({
+                    throw new UnsupportedFunctionalityError$1({
                       functionality: "File data URLs in assistant messages are not supported"
                     });
                   }
@@ -25474,7 +25178,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
         };
       default: {
         const _exhaustiveCheck = type;
-        throw new UnsupportedFunctionalityError$5({
+        throw new UnsupportedFunctionalityError$1({
           functionality: `tool choice type: ${_exhaustiveCheck}`
         });
       }
@@ -26323,166 +26027,6 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
   }
   createGoogleGenerativeAI();
 
-  // src/errors/ai-sdk-error.ts
-  var marker$4 = "vercel.ai.error";
-  var symbol$4 = Symbol.for(marker$4);
-  var _a$4;
-  var _AISDKError$4 = class _AISDKError extends Error {
-    /**
-     * Creates an AI SDK Error.
-     *
-     * @param {Object} params - The parameters for creating the error.
-     * @param {string} params.name - The name of the error.
-     * @param {string} params.message - The error message.
-     * @param {unknown} [params.cause] - The underlying cause of the error.
-     */
-    constructor({
-      name: name14,
-      message,
-      cause
-    }) {
-      super(message);
-      this[_a$4] = true;
-      this.name = name14;
-      this.cause = cause;
-    }
-    /**
-     * Checks if the given error is an AI SDK Error.
-     * @param {unknown} error - The error to check.
-     * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
-     */
-    static isInstance(error) {
-      return _AISDKError.hasMarker(error, marker$4);
-    }
-    static hasMarker(error, marker15) {
-      const markerSymbol = Symbol.for(marker15);
-      return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
-    }
-  };
-  _a$4 = symbol$4;
-  var AISDKError$4 = _AISDKError$4;
-
-  // src/errors/api-call-error.ts
-  var name$1 = "AI_APICallError";
-  var marker2$1 = `vercel.ai.error.${name$1}`;
-  var symbol2$1 = Symbol.for(marker2$1);
-  var _a2$1;
-  var APICallError$1 = class APICallError extends AISDKError$4 {
-    constructor({
-      message,
-      url,
-      requestBodyValues,
-      statusCode,
-      responseHeaders,
-      responseBody,
-      cause,
-      isRetryable = statusCode != null && (statusCode === 408 || // request timeout
-      statusCode === 409 || // conflict
-      statusCode === 429 || // too many requests
-      statusCode >= 500),
-      // server error
-      data
-    }) {
-      super({ name: name$1, message, cause });
-      this[_a2$1] = true;
-      this.url = url;
-      this.requestBodyValues = requestBodyValues;
-      this.statusCode = statusCode;
-      this.responseHeaders = responseHeaders;
-      this.responseBody = responseBody;
-      this.isRetryable = isRetryable;
-      this.data = data;
-    }
-    static isInstance(error) {
-      return AISDKError$4.hasMarker(error, marker2$1);
-    }
-  };
-  _a2$1 = symbol2$1;
-
-  // src/errors/invalid-prompt-error.ts
-  var name4 = "AI_InvalidPromptError";
-  var marker5 = `vercel.ai.error.${name4}`;
-  var symbol5 = Symbol.for(marker5);
-  var _a5;
-  var InvalidPromptError = class extends AISDKError$4 {
-    constructor({
-      prompt,
-      message,
-      cause
-    }) {
-      super({ name: name4, message: `Invalid prompt: ${message}`, cause });
-      this[_a5] = true;
-      this.prompt = prompt;
-    }
-    static isInstance(error) {
-      return AISDKError$4.hasMarker(error, marker5);
-    }
-  };
-  _a5 = symbol5;
-
-  // src/errors/invalid-response-data-error.ts
-  var name5 = "AI_InvalidResponseDataError";
-  var marker6 = `vercel.ai.error.${name5}`;
-  var symbol6 = Symbol.for(marker6);
-  var _a6;
-  var InvalidResponseDataError = class extends AISDKError$4 {
-    constructor({
-      data,
-      message = `Invalid response data: ${JSON.stringify(data)}.`
-    }) {
-      super({ name: name5, message });
-      this[_a6] = true;
-      this.data = data;
-    }
-    static isInstance(error) {
-      return AISDKError$4.hasMarker(error, marker6);
-    }
-  };
-  _a6 = symbol6;
-
-  // src/errors/too-many-embedding-values-for-call-error.ts
-  var name11$1 = "AI_TooManyEmbeddingValuesForCallError";
-  var marker12$1 = `vercel.ai.error.${name11$1}`;
-  var symbol12$1 = Symbol.for(marker12$1);
-  var _a12$1;
-  var TooManyEmbeddingValuesForCallError$1 = class TooManyEmbeddingValuesForCallError extends AISDKError$4 {
-    constructor(options) {
-      super({
-        name: name11$1,
-        message: `Too many values for a single embedding call. The ${options.provider} model "${options.modelId}" can only embed up to ${options.maxEmbeddingsPerCall} values per call, but ${options.values.length} values were provided.`
-      });
-      this[_a12$1] = true;
-      this.provider = options.provider;
-      this.modelId = options.modelId;
-      this.maxEmbeddingsPerCall = options.maxEmbeddingsPerCall;
-      this.values = options.values;
-    }
-    static isInstance(error) {
-      return AISDKError$4.hasMarker(error, marker12$1);
-    }
-  };
-  _a12$1 = symbol12$1;
-
-  // src/errors/unsupported-functionality-error.ts
-  var name13$4 = "AI_UnsupportedFunctionalityError";
-  var marker14$4 = `vercel.ai.error.${name13$4}`;
-  var symbol14$4 = Symbol.for(marker14$4);
-  var _a14$4;
-  var UnsupportedFunctionalityError$4 = class UnsupportedFunctionalityError extends AISDKError$4 {
-    constructor({
-      functionality,
-      message = `'${functionality}' functionality not supported.`
-    }) {
-      super({ name: name13$4, message });
-      this[_a14$4] = true;
-      this.functionality = functionality;
-    }
-    static isInstance(error) {
-      return AISDKError$4.hasMarker(error, marker14$4);
-    }
-  };
-  _a14$4 = symbol14$4;
-
   // src/openai-provider.ts
   var openaiErrorDataSchema = object$1({
     error: object$1({
@@ -26559,7 +26103,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                     };
                   } else if (part.mediaType.startsWith("audio/")) {
                     if (part.data instanceof URL) {
-                      throw new UnsupportedFunctionalityError$4({
+                      throw new UnsupportedFunctionalityError$1({
                         functionality: "audio file parts with URLs"
                       });
                     }
@@ -26584,14 +26128,14 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                         };
                       }
                       default: {
-                        throw new UnsupportedFunctionalityError$4({
+                        throw new UnsupportedFunctionalityError$1({
                           functionality: `audio content parts with media type ${part.mediaType}`
                         });
                       }
                     }
                   } else if (part.mediaType === "application/pdf") {
                     if (part.data instanceof URL) {
-                      throw new UnsupportedFunctionalityError$4({
+                      throw new UnsupportedFunctionalityError$1({
                         functionality: "PDF file parts with URLs"
                       });
                     }
@@ -26603,7 +26147,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
                       }
                     };
                   } else {
-                    throw new UnsupportedFunctionalityError$4({
+                    throw new UnsupportedFunctionalityError$1({
                       functionality: `file part media type ${part.mediaType}`
                     });
                   }
@@ -26965,7 +26509,7 @@ The token is expected to be provided via the 'VERCEL_OIDC_TOKEN' environment var
         };
       default: {
         const _exhaustiveCheck = type;
-        throw new UnsupportedFunctionalityError$4({
+        throw new UnsupportedFunctionalityError$1({
           functionality: `tool choice type: ${_exhaustiveCheck}`
         });
       }
@@ -27669,7 +27213,7 @@ ${userMessage}
                 return part.text;
               }
               case "tool-call": {
-                throw new UnsupportedFunctionalityError$4({
+                throw new UnsupportedFunctionalityError$1({
                   functionality: "tool-call messages"
                 });
               }
@@ -27682,7 +27226,7 @@ ${assistantMessage}
           break;
         }
         case "tool": {
-          throw new UnsupportedFunctionalityError$4({
+          throw new UnsupportedFunctionalityError$1({
             functionality: "tool messages"
           });
         }
@@ -28309,7 +27853,7 @@ ${user}:`]
                       }
                     };
                   } else {
-                    throw new UnsupportedFunctionalityError$4({
+                    throw new UnsupportedFunctionalityError$1({
                       functionality: `file part media type ${part.mediaType}`
                     });
                   }
@@ -28526,7 +28070,7 @@ ${user}:`]
         };
       default: {
         const _exhaustiveCheck = type;
-        throw new UnsupportedFunctionalityError$4({
+        throw new UnsupportedFunctionalityError$1({
           functionality: `tool choice type: ${_exhaustiveCheck}`
         });
       }
@@ -28750,7 +28294,7 @@ ${user}:`]
       };
     }
     async doGenerate(options) {
-      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q;
       const { args: body, warnings } = await this.getArgs(options);
       const url = this.config.url({
         path: "/responses",
@@ -28796,10 +28340,12 @@ ${user}:`]
                           }),
                           object$1({
                             type: literal("file_citation"),
-                            start_index: number$1(),
-                            end_index: number$1(),
                             file_id: string$1(),
-                            quote: string$1()
+                            filename: string$1().nullish(),
+                            index: number$1().nullish(),
+                            start_index: number$1().nullish(),
+                            end_index: number$1().nullish(),
+                            quote: string$1().nullish()
                           })
                         ])
                       )
@@ -28848,6 +28394,7 @@ ${user}:`]
                 })
               ])
             ),
+            service_tier: string$1().nullish(),
             incomplete_details: object$1({ reason: string$1() }).nullable(),
             usage: usageSchema2
           })
@@ -28917,8 +28464,8 @@ ${user}:`]
                     sourceType: "document",
                     id: (_i = (_h = (_g = this.config).generateId) == null ? void 0 : _h.call(_g)) != null ? _i : generateId$1(),
                     mediaType: "text/plain",
-                    title: annotation.quote,
-                    filename: annotation.file_id
+                    title: (_k = (_j = annotation.quote) != null ? _j : annotation.filename) != null ? _k : "Document",
+                    filename: (_l = annotation.filename) != null ? _l : annotation.file_id
                   });
                 }
               }
@@ -29006,18 +28553,21 @@ ${user}:`]
       if (logprobs.length > 0) {
         providerMetadata.openai.logprobs = logprobs;
       }
+      if (typeof response.service_tier === "string") {
+        providerMetadata.openai.serviceTier = response.service_tier;
+      }
       return {
         content,
         finishReason: mapOpenAIResponseFinishReason({
-          finishReason: (_j = response.incomplete_details) == null ? void 0 : _j.reason,
+          finishReason: (_m = response.incomplete_details) == null ? void 0 : _m.reason,
           hasToolCalls: content.some((part) => part.type === "tool-call")
         }),
         usage: {
           inputTokens: response.usage.input_tokens,
           outputTokens: response.usage.output_tokens,
           totalTokens: response.usage.input_tokens + response.usage.output_tokens,
-          reasoningTokens: (_l = (_k = response.usage.output_tokens_details) == null ? void 0 : _k.reasoning_tokens) != null ? _l : void 0,
-          cachedInputTokens: (_n = (_m = response.usage.input_tokens_details) == null ? void 0 : _m.cached_tokens) != null ? _n : void 0
+          reasoningTokens: (_o = (_n = response.usage.output_tokens_details) == null ? void 0 : _n.reasoning_tokens) != null ? _o : void 0,
+          cachedInputTokens: (_q = (_p = response.usage.input_tokens_details) == null ? void 0 : _p.cached_tokens) != null ? _q : void 0
         },
         request: { body },
         response: {
@@ -29062,6 +28612,7 @@ ${user}:`]
       const ongoingToolCalls = {};
       let hasToolCalls = false;
       const activeReasoning = {};
+      let serviceTier;
       return {
         stream: response.pipeThrough(
           new TransformStream({
@@ -29069,7 +28620,7 @@ ${user}:`]
               controller.enqueue({ type: "stream-start", warnings });
             },
             transform(chunk, controller) {
-              var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r;
+              var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u;
               if (options.includeRawChunks) {
                 controller.enqueue({ type: "raw", rawValue: chunk.rawValue });
               }
@@ -29320,6 +28871,9 @@ ${user}:`]
                 usage.totalTokens = value.response.usage.input_tokens + value.response.usage.output_tokens;
                 usage.reasoningTokens = (_j = (_i = value.response.usage.output_tokens_details) == null ? void 0 : _i.reasoning_tokens) != null ? _j : void 0;
                 usage.cachedInputTokens = (_l = (_k = value.response.usage.input_tokens_details) == null ? void 0 : _k.cached_tokens) != null ? _l : void 0;
+                if (typeof value.response.service_tier === "string") {
+                  serviceTier = value.response.service_tier;
+                }
               } else if (isResponseAnnotationAddedChunk(value)) {
                 if (value.annotation.type === "url_citation") {
                   controller.enqueue({
@@ -29335,8 +28889,8 @@ ${user}:`]
                     sourceType: "document",
                     id: (_r = (_q = (_p = self.config).generateId) == null ? void 0 : _q.call(_p)) != null ? _r : generateId$1(),
                     mediaType: "text/plain",
-                    title: value.annotation.quote,
-                    filename: value.annotation.file_id
+                    title: (_t = (_s = value.annotation.quote) != null ? _s : value.annotation.filename) != null ? _t : "Document",
+                    filename: (_u = value.annotation.filename) != null ? _u : value.annotation.file_id
                   });
                 }
               } else if (isErrorChunk(value)) {
@@ -29351,6 +28905,9 @@ ${user}:`]
               };
               if (logprobs.length > 0) {
                 providerMetadata.openai.logprobs = logprobs;
+              }
+              if (serviceTier !== void 0) {
+                providerMetadata.openai.serviceTier = serviceTier;
               }
               controller.enqueue({
                 type: "finish",
@@ -29389,7 +28946,8 @@ ${user}:`]
     type: _enum(["response.completed", "response.incomplete"]),
     response: object$1({
       incomplete_details: object$1({ reason: string$1() }).nullish(),
-      usage: usageSchema2
+      usage: usageSchema2,
+      service_tier: string$1().nullish()
     })
   });
   var responseCreatedChunkSchema = object$1({
@@ -29397,7 +28955,8 @@ ${user}:`]
     response: object$1({
       id: string$1(),
       created_at: number$1(),
-      model: string$1()
+      model: string$1(),
+      service_tier: string$1().nullish()
     })
   });
   var responseOutputItemAddedSchema = object$1({
@@ -29514,7 +29073,11 @@ ${user}:`]
       object$1({
         type: literal("file_citation"),
         file_id: string$1(),
-        quote: string$1()
+        filename: string$1().nullish(),
+        index: number$1().nullish(),
+        start_index: number$1().nullish(),
+        end_index: number$1().nullish(),
+        quote: string$1().nullish()
       })
     ])
   });
@@ -29859,7 +29422,12 @@ ${user}:`]
       const formData = new FormData();
       const blob = audio instanceof Uint8Array ? new Blob([audio]) : new Blob([convertBase64ToUint8Array(audio)]);
       formData.append("model", this.modelId);
-      formData.append("file", new File([blob], "audio", { type: mediaType }));
+      const fileExtension = mediaTypeToExtension(mediaType);
+      formData.append(
+        "file",
+        new File([blob], "audio", { type: mediaType }),
+        `audio.${fileExtension}`
+      );
       if (openAIOptions) {
         const transcriptionModelOptions = {
           include: openAIOptions.include,
@@ -30046,88 +29614,6 @@ ${user}:`]
     return provider;
   }
   createOpenAI();
-
-  // src/errors/ai-sdk-error.ts
-  var marker$3 = "vercel.ai.error";
-  var symbol$3 = Symbol.for(marker$3);
-  var _a$3;
-  var _AISDKError$3 = class _AISDKError extends Error {
-    /**
-     * Creates an AI SDK Error.
-     *
-     * @param {Object} params - The parameters for creating the error.
-     * @param {string} params.name - The name of the error.
-     * @param {string} params.message - The error message.
-     * @param {unknown} [params.cause] - The underlying cause of the error.
-     */
-    constructor({
-      name: name14,
-      message,
-      cause
-    }) {
-      super(message);
-      this[_a$3] = true;
-      this.name = name14;
-      this.cause = cause;
-    }
-    /**
-     * Checks if the given error is an AI SDK Error.
-     * @param {unknown} error - The error to check.
-     * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
-     */
-    static isInstance(error) {
-      return _AISDKError.hasMarker(error, marker$3);
-    }
-    static hasMarker(error, marker15) {
-      const markerSymbol = Symbol.for(marker15);
-      return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
-    }
-  };
-  _a$3 = symbol$3;
-  var AISDKError$3 = _AISDKError$3;
-
-  // src/errors/no-such-model-error.ts
-  var name10$2 = "AI_NoSuchModelError";
-  var marker11$2 = `vercel.ai.error.${name10$2}`;
-  var symbol11$2 = Symbol.for(marker11$2);
-  var _a11$2;
-  var NoSuchModelError$2 = class NoSuchModelError extends AISDKError$3 {
-    constructor({
-      errorName = name10$2,
-      modelId,
-      modelType,
-      message = `No such ${modelType}: ${modelId}`
-    }) {
-      super({ name: errorName, message });
-      this[_a11$2] = true;
-      this.modelId = modelId;
-      this.modelType = modelType;
-    }
-    static isInstance(error) {
-      return AISDKError$3.hasMarker(error, marker11$2);
-    }
-  };
-  _a11$2 = symbol11$2;
-
-  // src/errors/unsupported-functionality-error.ts
-  var name13$3 = "AI_UnsupportedFunctionalityError";
-  var marker14$3 = `vercel.ai.error.${name13$3}`;
-  var symbol14$3 = Symbol.for(marker14$3);
-  var _a14$3;
-  var UnsupportedFunctionalityError$3 = class UnsupportedFunctionalityError extends AISDKError$3 {
-    constructor({
-      functionality,
-      message = `'${functionality}' functionality not supported.`
-    }) {
-      super({ name: name13$3, message });
-      this[_a14$3] = true;
-      this.functionality = functionality;
-    }
-    static isInstance(error) {
-      return AISDKError$3.hasMarker(error, marker14$3);
-    }
-  };
-  _a14$3 = symbol14$3;
 
   // src/anthropic-provider.ts
   var anthropicErrorDataSchema = object$1({
@@ -30392,7 +29878,7 @@ ${user}:`]
         };
       default: {
         const _exhaustiveCheck = type;
-        throw new UnsupportedFunctionalityError$3({
+        throw new UnsupportedFunctionalityError$1({
           functionality: `tool choice type: ${_exhaustiveCheck}`
         });
       }
@@ -30425,11 +29911,11 @@ ${user}:`]
       return new TextDecoder().decode(data);
     }
     if (data instanceof URL) {
-      throw new UnsupportedFunctionalityError$3({
+      throw new UnsupportedFunctionalityError$1({
         functionality: "URL-based text documents are not supported for citations"
       });
     }
-    throw new UnsupportedFunctionalityError$3({
+    throw new UnsupportedFunctionalityError$1({
       functionality: `unsupported data type for text documents: ${typeof data}`
     });
   }
@@ -30470,7 +29956,7 @@ ${user}:`]
       switch (type) {
         case "system": {
           if (system != null) {
-            throw new UnsupportedFunctionalityError$3({
+            throw new UnsupportedFunctionalityError$1({
               functionality: "Multiple system messages that are separated by user/assistant messages"
             });
           }
@@ -30564,7 +30050,7 @@ ${user}:`]
                           cache_control: cacheControl
                         });
                       } else {
-                        throw new UnsupportedFunctionalityError$3({
+                        throw new UnsupportedFunctionalityError$1({
                           functionality: `media type: ${part.mediaType}`
                         });
                       }
@@ -30603,7 +30089,7 @@ ${user}:`]
                                 cache_control: void 0
                               };
                             }
-                            throw new UnsupportedFunctionalityError$3({
+                            throw new UnsupportedFunctionalityError$1({
                               functionality: `media type: ${contentPart.mediaType}`
                             });
                           }
@@ -30867,9 +30353,12 @@ ${user}:`]
     isJsonResponseFromTool
   }) {
     switch (finishReason) {
+      case "pause_turn":
       case "end_turn":
       case "stop_sequence":
         return "stop";
+      case "refusal":
+        return "content-filter";
       case "tool_use":
         return isJsonResponseFromTool ? "stop" : "tool-calls";
       case "max_tokens":
@@ -31059,7 +30548,7 @@ ${user}:`]
       };
       if (isThinking) {
         if (thinkingBudget == null) {
-          throw new UnsupportedFunctionalityError$3({
+          throw new UnsupportedFunctionalityError$1({
             functionality: "thinking requires a budget"
           });
         }
@@ -31098,7 +30587,7 @@ ${user}:`]
         jsonResponseTool != null ? {
           tools: [jsonResponseTool],
           toolChoice: { type: "tool", toolName: jsonResponseTool.name },
-          disableParallelToolUse: anthropicOptions == null ? void 0 : anthropicOptions.disableParallelToolUse
+          disableParallelToolUse: true
         } : {
           tools: tools != null ? tools : [],
           toolChoice,
@@ -32134,10 +31623,10 @@ ${user}:`]
     provider.chat = createChatModel;
     provider.messages = createChatModel;
     provider.textEmbeddingModel = (modelId) => {
-      throw new NoSuchModelError$2({ modelId, modelType: "textEmbeddingModel" });
+      throw new NoSuchModelError({ modelId, modelType: "textEmbeddingModel" });
     };
     provider.imageModel = (modelId) => {
-      throw new NoSuchModelError$2({ modelId, modelType: "imageModel" });
+      throw new NoSuchModelError({ modelId, modelType: "imageModel" });
     };
     provider.tools = anthropicTools;
     return provider;
@@ -32337,88 +31826,6 @@ ${user}:`]
     data: array(object$1({ b64_json: string$1() }))
   });
 
-  // src/errors/ai-sdk-error.ts
-  var marker$2 = "vercel.ai.error";
-  var symbol$2 = Symbol.for(marker$2);
-  var _a$2;
-  var _AISDKError$2 = class _AISDKError extends Error {
-    /**
-     * Creates an AI SDK Error.
-     *
-     * @param {Object} params - The parameters for creating the error.
-     * @param {string} params.name - The name of the error.
-     * @param {string} params.message - The error message.
-     * @param {unknown} [params.cause] - The underlying cause of the error.
-     */
-    constructor({
-      name: name14,
-      message,
-      cause
-    }) {
-      super(message);
-      this[_a$2] = true;
-      this.name = name14;
-      this.cause = cause;
-    }
-    /**
-     * Checks if the given error is an AI SDK Error.
-     * @param {unknown} error - The error to check.
-     * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
-     */
-    static isInstance(error) {
-      return _AISDKError.hasMarker(error, marker$2);
-    }
-    static hasMarker(error, marker15) {
-      const markerSymbol = Symbol.for(marker15);
-      return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
-    }
-  };
-  _a$2 = symbol$2;
-  var AISDKError$2 = _AISDKError$2;
-
-  // src/errors/no-such-model-error.ts
-  var name10$1 = "AI_NoSuchModelError";
-  var marker11$1 = `vercel.ai.error.${name10$1}`;
-  var symbol11$1 = Symbol.for(marker11$1);
-  var _a11$1;
-  var NoSuchModelError$1 = class NoSuchModelError extends AISDKError$2 {
-    constructor({
-      errorName = name10$1,
-      modelId,
-      modelType,
-      message = `No such ${modelType}: ${modelId}`
-    }) {
-      super({ name: errorName, message });
-      this[_a11$1] = true;
-      this.modelId = modelId;
-      this.modelType = modelType;
-    }
-    static isInstance(error) {
-      return AISDKError$2.hasMarker(error, marker11$1);
-    }
-  };
-  _a11$1 = symbol11$1;
-
-  // src/errors/unsupported-functionality-error.ts
-  var name13$2 = "AI_UnsupportedFunctionalityError";
-  var marker14$2 = `vercel.ai.error.${name13$2}`;
-  var symbol14$2 = Symbol.for(marker14$2);
-  var _a14$2;
-  var UnsupportedFunctionalityError$2 = class UnsupportedFunctionalityError extends AISDKError$2 {
-    constructor({
-      functionality,
-      message = `'${functionality}' functionality not supported.`
-    }) {
-      super({ name: name13$2, message });
-      this[_a14$2] = true;
-      this.functionality = functionality;
-    }
-    static isInstance(error) {
-      return AISDKError$2.hasMarker(error, marker14$2);
-    }
-  };
-  _a14$2 = symbol14$2;
-
   // src/xai-provider.ts
   function convertToXaiChatMessages(prompt) {
     const messages = [];
@@ -32451,7 +31858,7 @@ ${user}:`]
                       }
                     };
                   } else {
-                    throw new UnsupportedFunctionalityError$2({
+                    throw new UnsupportedFunctionalityError$1({
                       functionality: `file part media type ${part.mediaType}`
                     });
                   }
@@ -32675,7 +32082,7 @@ ${user}:`]
         };
       default: {
         const _exhaustiveCheck = type;
-        throw new UnsupportedFunctionalityError$2({
+        throw new UnsupportedFunctionalityError$1({
           functionality: `tool choice type: ${_exhaustiveCheck}`
         });
       }
@@ -33154,95 +32561,13 @@ ${user}:`]
     provider.languageModel = createLanguageModel;
     provider.chat = createLanguageModel;
     provider.textEmbeddingModel = (modelId) => {
-      throw new NoSuchModelError$1({ modelId, modelType: "textEmbeddingModel" });
+      throw new NoSuchModelError({ modelId, modelType: "textEmbeddingModel" });
     };
     provider.imageModel = createImageModel;
     provider.image = createImageModel;
     return provider;
   }
   var xai = createXai();
-
-  // src/errors/ai-sdk-error.ts
-  var marker$1 = "vercel.ai.error";
-  var symbol$1 = Symbol.for(marker$1);
-  var _a$1;
-  var _AISDKError$1 = class _AISDKError extends Error {
-    /**
-     * Creates an AI SDK Error.
-     *
-     * @param {Object} params - The parameters for creating the error.
-     * @param {string} params.name - The name of the error.
-     * @param {string} params.message - The error message.
-     * @param {unknown} [params.cause] - The underlying cause of the error.
-     */
-    constructor({
-      name: name14,
-      message,
-      cause
-    }) {
-      super(message);
-      this[_a$1] = true;
-      this.name = name14;
-      this.cause = cause;
-    }
-    /**
-     * Checks if the given error is an AI SDK Error.
-     * @param {unknown} error - The error to check.
-     * @returns {boolean} True if the error is an AI SDK Error, false otherwise.
-     */
-    static isInstance(error) {
-      return _AISDKError.hasMarker(error, marker$1);
-    }
-    static hasMarker(error, marker15) {
-      const markerSymbol = Symbol.for(marker15);
-      return error != null && typeof error === "object" && markerSymbol in error && typeof error[markerSymbol] === "boolean" && error[markerSymbol] === true;
-    }
-  };
-  _a$1 = symbol$1;
-  var AISDKError$1 = _AISDKError$1;
-
-  // src/errors/no-such-model-error.ts
-  var name10 = "AI_NoSuchModelError";
-  var marker11 = `vercel.ai.error.${name10}`;
-  var symbol11 = Symbol.for(marker11);
-  var _a11;
-  var NoSuchModelError = class extends AISDKError$1 {
-    constructor({
-      errorName = name10,
-      modelId,
-      modelType,
-      message = `No such ${modelType}: ${modelId}`
-    }) {
-      super({ name: errorName, message });
-      this[_a11] = true;
-      this.modelId = modelId;
-      this.modelType = modelType;
-    }
-    static isInstance(error) {
-      return AISDKError$1.hasMarker(error, marker11);
-    }
-  };
-  _a11 = symbol11;
-
-  // src/errors/unsupported-functionality-error.ts
-  var name13$1 = "AI_UnsupportedFunctionalityError";
-  var marker14$1 = `vercel.ai.error.${name13$1}`;
-  var symbol14$1 = Symbol.for(marker14$1);
-  var _a14$1;
-  var UnsupportedFunctionalityError$1 = class UnsupportedFunctionalityError extends AISDKError$1 {
-    constructor({
-      functionality,
-      message = `'${functionality}' functionality not supported.`
-    }) {
-      super({ name: name13$1, message });
-      this[_a14$1] = true;
-      this.functionality = functionality;
-    }
-    static isInstance(error) {
-      return AISDKError$1.hasMarker(error, marker14$1);
-    }
-  };
-  _a14$1 = symbol14$1;
 
   // src/perplexity-provider.ts
   function convertToPerplexityMessages(prompt) {
@@ -37144,15 +36469,13 @@ Your goal is to ensure a seamless and user-friendly browsing experience.`;
     async sendMessage(prompt) {
       const model = this.currentProvider.getModel();
       debugLog(`urlBarLLM: Sending prompt: "${prompt}"`);
-      await generateText(
-        {
-          model,
-          system: this.systemInstruction,
-          prompt,
-          tools: urlBarToolSet ,
-          maxSteps: this.maxToolCalls,
-        }
-      );
+      await generateText({
+        model,
+        system: this.systemInstruction,
+        prompt,
+        tools: urlBarToolSet,
+        maxSteps: this.maxToolCalls,
+      });
     }
   }
 
@@ -37328,7 +36651,9 @@ Your goal is to ensure a seamless and user-friendly browsing experience.`;
   var markdownStylesInjected = false;
   const injectMarkdownStyles = async () => {
     try {
-      const { markedStyles } = await import('chrome://userscripts/content/engine/marked.js');
+      const { markedStyles } = await import(
+        'chrome://userscripts/content/engine/assets/imports/marked.js'
+      );
       const styleTag = parseElement(`<style>${markedStyles}</style>`);
       document.head.appendChild(styleTag);
       markdownStylesInjected = true;
@@ -37429,6 +36754,7 @@ Your goal is to ensure a seamless and user-friendly browsing experience.`;
     _handleResize: null,
     _handleResizeEnd: null,
     _toolConfirmationDialog: null,
+    _highlightTimeout: null,
 
     _updateFindbarDimensions() {
       if (!this.findbar) {
@@ -37634,9 +36960,15 @@ Your goal is to ensure a seamless and user-friendly browsing experience.`;
 
     highlight(word) {
       if (!this.findbar) return;
+
+      // clear any existing timeout before starting a new one
+      if (this._highlightTimeout) clearTimeout(this._highlightTimeout);
+
       this.findbar._find(word);
-      setTimeout(() => {
+
+      this._highlightTimeout = setTimeout(() => {
         this.findbar.browser.finder.highlight(false);
+        this._highlightTimeout = null; // cleanup
       }, 2000);
     },
 
@@ -38047,7 +37379,7 @@ Your goal is to ensure a seamless and user-friendly browsing experience.`;
           if (citations && citations.length > 0) {
             messageDiv.dataset.citations = JSON.stringify(citations);
           }
-          textToParse = answer.replace(
+          const textToParse = answer.replace(
             /\[(\d+)\]/g,
             `<button class="citation-link" data-citation-id="$1">[$1]</button>`
           );
